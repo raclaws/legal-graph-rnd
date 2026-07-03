@@ -84,7 +84,15 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
             messages=api_messages,
         )
 
-        raw = response.content[0].text if response.content else None
+        raw = None
+        if response.content:
+            raw = response.content[0].text
+        else:
+            d = response.to_dict() if hasattr(response, 'to_dict') else {}
+            choices = d.get('choices')
+            if choices:
+                raw = choices[0]['message']['content']
+
         if not raw:
             return None
 
@@ -114,6 +122,13 @@ def call_llm_simple(prompt: str) -> str | None:
             timeout=120.0,
             messages=[{"role": "user", "content": prompt}],
         )
-        return response.content[0].text if response.content else None
+
+        if response.content:
+            return response.content[0].text
+        d = response.to_dict() if hasattr(response, 'to_dict') else {}
+        choices = d.get('choices')
+        if choices:
+            return choices[0]['message']['content']
+        return None
     except Exception:
         return None
