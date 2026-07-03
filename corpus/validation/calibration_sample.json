@@ -1,0 +1,1517 @@
+{
+  "sample_size": 50,
+  "model": "claude-opus-4.6",
+  "norms": [
+    {
+      "node_id": "PP/2021/36/Bab/II/Pasal/13/Ayat/2",
+      "source_text": "Uang servis pada usaha tertentu wajib dibagikan  kepada \nPekerja/Buruh \nsetelah \ndikurangi \nbiaya \ncadangan terhadap risiko kehilangan atau kerusakan \ndan pendayagunaan peningkatan kualitas sumber \ndaya manusia.",
+      "description": "Uang servis pada usaha tertentu wajib dibagikan  kepada \nPekerja/Buruh \nsetelah \ndikurangi \nbiaya \ncadangan terhadap risiko kehilangan atau kerusakan \ndan pendayagunaan peningkatan kualitas sumber \ndaya manusia.",
+      "severity": "high",
+      "consequence": "Pengusaha yang melanggar ketentuan Pasal 9 ayat (1),  Pasal 9 ayat (2), Pasal 13 ayat (2), Pasal 21 ayat (1), \nPasal 21 ayat (2), dan/atau Pasal 53 ayat (2) dikenai \nsanksi administratif berupa: \na.",
+      "confidence": "high",
+      "subjects": [
+        "pekerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/167/Ayat/5",
+      "source_text": "Dalam hal pengusaha tidak mengikutsertakan pekerja/buruh yang mengalami pemutusan hubungan kerja karena usia pensiun pada program pensiun maka pengusaha wajib memberikan kepada pekerja/buruh uang pesangon sebesar 2\n(dua) kali ketentuan Pasal 156 ayat (2), uang penghargaan masa kerja 1 (satu) kali ketentuan Pasal 156 ayat (3) dan\nuang penggantian hak sesuai ketentuan Pasal 156 ayat (4).",
+      "description": "Dalam hal pengusaha tidak mengikutsertakan pekerja/buruh yang mengalami pemutusan hubungan kerja karena usia pensiun pada program pensiun maka pengusaha wajib memberikan kepada pekerja/buruh uang pesangon sebesar 2\n(dua) kali ketentuan Pasal 156 ayat (2), uang penghargaan masa kerja 1 (satu) kali ketentuan Pasal 156 ayat (3) dan\nuang penggantian hak sesuai ketentuan Pasal 156 ayat (4).",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 167 ayat (5), dikenakan sanksi pidana penjara paling singkat 1 (satu) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 100.000.000,00 (seratus\njuta rupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "confidence": "high",
+      "subjects": [
+        "pengusaha",
+        "pekerja"
+      ],
+      "quantities": [
+        [
+          "2",
+          "kali"
+        ],
+        [
+          "1",
+          "kali"
+        ]
+      ],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2021/34/Bab/VI/Pasal/32/Ayat/3",
+      "source_text": "Pemberi Kerja TKA wajib melaporkan kepada Menteri  atau pejabat yang ditunjuk untuk perjanjian kerja TKA \nyang telah berakhir atau diakhiri sebelum jangka \nwaktu perjanjian kerja berakhir.",
+      "description": "Pemberi Kerja TKA wajib melaporkan kepada Menteri  atau pejabat yang ditunjuk untuk perjanjian kerja TKA \nyang telah berakhir atau diakhiri sebelum jangka \nwaktu perjanjian kerja berakhir.",
+      "severity": "high",
+      "consequence": "Sanksi penghentian sementara proses permohonan  Pengesahan RPTKA sebagaimana dimaksud dalam \nPasal 36 ayat (1) huruf b dikenakan kepada Pemberi \nKerja TKA yang melanggar ketentuan: \na.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "menteri"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/153/Ayat/2",
+      "source_text": "Pemutusan hubungan kerja yang dilakukan dengan alasan sebagaimana dimaksud dalam ayat (1) batal demi hukum dan pengusaha wajib mempekerjakan kembali pekerja/buruh yang bersangkutan.",
+      "description": "Pemutusan hubungan kerja yang dilakukan dengan alasan sebagaimana dimaksud dalam ayat (1) batal demi hukum dan pengusaha wajib mempekerjakan kembali pekerja/buruh yang bersangkutan.",
+      "severity": "high",
+      "consequence": "Pemutusan hubungan kerja yang dilakukan dengan alasan sebagaimana dimaksud dalam ayat (1) batal demi hukum dan pengusaha wajib mempekerjakan kembali pekerja/buruh yang bersangkutan.",
+      "confidence": "high",
+      "subjects": [
+        "pengusaha",
+        "pekerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2015/45/Bab/VI/Pasal/36/Ayat/1",
+      "source_text": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 34 tetapi\nPemberi Kerja selain penyelenggara negara tetap tidak patuh dalam\nmembayar Iuran dan kewajiban lainnya, maka BPJS Ketenagakerjaan\nwajib\nmelaporkan\nketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan pada instansi yang bertanggung jawab di bidang\nketenagakerjaan\npada\nPemerintah,\npemerintah\ndaerah\nprovinsi,\ndan/atau\npemerintah\ndaerah\nkabupaten/kota\nsesuai\ndengan\nketentuan peraturan perundang-undangan.",
+      "description": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 34 tetapi\nPemberi Kerja selain penyelenggara negara tetap tidak patuh dalam\nmembayar Iuran dan kewajiban lainnya, maka BPJS Ketenagakerjaan\nwajib\nmelaporkan\nketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan pada instansi yang bertanggung jawab di...",
+      "severity": "high",
+      "consequence": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 34 tetapi\nPemberi Kerja selain penyelenggara negara tetap tidak patuh dalam\nmembayar Iuran dan kewajiban lainnya, maka BPJS Ketenagakerjaan\nwajib\nmelaporkan\nketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan pada instansi yang bertanggung jawab di...",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "bpjs_ketenagakerjaan",
+        "bpjs",
+        "pemerintah",
+        "instansi"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/183/Ayat/1",
+      "source_text": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 74, dikenakan sanksi pidana penjara paling singkat 2 (dua) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 200.000.000,00 (dua ratus juta\nrupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "description": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 74, dikenakan sanksi pidana penjara paling singkat 2 (dua) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 200.000.000,00 (dua ratus juta\nrupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 74, dikenakan sanksi pidana penjara paling singkat 2 (dua) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 200.000.000,00 (dua ratus juta\nrupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "tahun"
+        ],
+        [
+          "5",
+          "lima",
+          "tahun"
+        ],
+        [
+          "200.000.000,00"
+        ],
+        [
+          "500.000.000,00"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "minimum",
+        "maximum",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/X/Pasal/61/Ayat/1",
+      "source_text": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 59 ayat (2)\ntetapi Pemberi Kerja selain penyelenggara negara tetap tidak patuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya,\nmaka\nBPJS\nKetenagakerjaan wajib melaporkan ketidakpatuhan tersebut kepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nmenyelenggarakan\nurusan pemerintahan di bidang ketenagakerjaan pada Pemerintah,\npemerintah\ndaerah\nprovinsi,\ndan/atau\npemerintah\ndaerah\nkabupaten/kota\nsesuai\ndengan\nketentuan\nperaturan\nperundang-\nundangan.",
+      "description": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 59 ayat (2)\ntetapi Pemberi Kerja selain penyelenggara negara tetap tidak patuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya,\nmaka\nBPJS\nKetenagakerjaan wajib melaporkan ketidakpatuhan tersebut kepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nmenyelenggarakan\nurusan pemerintahan di bidang ketenagakerjaan pada...",
+      "severity": "high",
+      "consequence": "Dalam hal Pemberi Kerja selain penyelenggara negara telah diberikan sanksi administratif sebagaimana dimaksud dalam Pasal 59 ayat (2)\ntetapi Pemberi Kerja selain penyelenggara negara tetap tidak patuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya,\nmaka\nBPJS\nKetenagakerjaan wajib melaporkan ketidakpatuhan tersebut kepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nmenyelenggarakan\nurusan pemerintahan di bidang ketenagakerjaan pada...",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "bpjs",
+        "pemerintah",
+        "instansi"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/V/Pasal/15",
+      "source_text": "Penyelenggara pelatihan kerja wajib memenuhi persyaratan:\na. tersedianya tenaga kepelatihan;\nb. adanya kurikulum yang sesuai dengan tingkat pelatihan;\nUU 13-2003\nfile:///D:/My%20AutoRun%20Projects/PUU%2000-07/2003/UU%2...\n4 of 32\n3/5/2010 1:19 AM\nwww.djpp.depkumham.go.id\nditjen Peraturan Perundang-undangan\n\nc. tersedianya sarana dan prasarana pelatihan kerja; dan\nd. tersedianya dana bagi kelangsungan kegiatan penyelenggaraan pelatihan kerja.",
+      "description": "Penyelenggara pelatihan kerja wajib memenuhi persyaratan:\na.",
+      "severity": "high",
+      "consequence": "Menteri atau pejabat yang ditunjuk mengenakan sanksi administratif atas pelanggaran ketentuan-ketentuan sebagaimana diatur dalam Pasal 5, Pasal 6, Pasal 15, Pasal 25, Pasal 38 ayat (2), Pasal 45 ayat (1), Pasal 47 ayat (1),\nPasal 48, Pasal 87, Pasal 106, Pasal 126 ayat (3), dan Pasal 160 ayat (1) dan ayat (2) Undang-undang ini serta\nperaturan pelaksanaannya.",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/VI/Pasal/35/Ayat/2",
+      "source_text": "Pelaksana penempatan tenaga kerja sebagaimana dimaksud dalam ayat (1) wajib memberikan perlindungan sejak rekrutmen sampai penempatan tenaga kerja",
+      "description": "Pelaksana penempatan tenaga kerja sebagaimana dimaksud dalam ayat (1) wajib memberikan perlindungan sejak rekrutmen sampai penempatan tenaga kerja",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 35 ayat (2) dan ayat (3), Pasal 93 ayat (2), Pasal 137, dan Pasal 138 ayat (1), dikenakan sanksi pidana penjara paling singkat 1 (satu) bulan dan paling lama 4\n(empat) tahun dan/atau denda paling sedikit Rp 10.000.000,00 (sepuluh juta rupiah) dan paling banyak Rp\nUU 13-2003\nfile:///D:/My%20AutoRun%20Projects/PUU%2000-07/2003/UU%2...",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2004/2/Bab/V/Pasal/116/Ayat/1",
+      "source_text": "Mediator yang tidak dapat menyelesaikan perselisihan hubungan industrial dalam waktu selambat- lambatnya 30 (tiga  puluh) hari kerja tanpa alasan yang sah sebagaimana dimaksud dalam Pasal 15 dapat dikenakan sanksi administratif \nberupa hukuman disiplin sesuai dengan peraturan perundang-undangan yang berlaku bagi Pegawai Negeri Sipil.",
+      "description": "Mediator yang tidak dapat menyelesaikan perselisihan hubungan industrial dalam waktu selambat- lambatnya 30 (tiga  puluh) hari kerja tanpa alasan yang sah sebagaimana dimaksud dalam Pasal 15 dapat dikenakan sanksi administratif \nberupa hukuman disiplin sesuai dengan peraturan perundang-undangan yang berlaku bagi Pegawai Negeri Sipil.",
+      "severity": "high",
+      "consequence": "Mediator yang tidak dapat menyelesaikan perselisihan hubungan industrial dalam waktu selambat- lambatnya 30 (tiga  puluh) hari kerja tanpa alasan yang sah sebagaimana dimaksud dalam Pasal 15 dapat dikenakan sanksi administratif \nberupa hukuman disiplin sesuai dengan peraturan perundang-undangan yang berlaku bagi Pegawai Negeri Sipil.",
+      "confidence": "high",
+      "subjects": [
+        "mediator"
+      ],
+      "quantities": [
+        [
+          "30",
+          "tiga  puluh",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "tidak_dapat"
+      ]
+    },
+    {
+      "node_id": "PP/2021/34/Bab/VII/Pasal/38/Ayat/2",
+      "source_text": "Pemberi Kerja TKA sebagaimana dimaksud pada ayat  (1) tetap berkewajiban untuk membayar sanksi denda \ndan denda keterlambatan sebesar 2% (dua persen) per \nbulan \ndari \njumlah \nsanksi \ndenda \nyang \nharus \ndibayarkan.",
+      "description": "Pemberi Kerja TKA sebagaimana dimaksud pada ayat  (1) tetap berkewajiban untuk membayar sanksi denda \ndan denda keterlambatan sebesar 2% (dua persen) per \nbulan \ndari \njumlah \nsanksi \ndenda \nyang \nharus \ndibayarkan.",
+      "severity": "high",
+      "consequence": "Pemberi Kerja TKA sebagaimana dimaksud pada ayat  (1) tetap berkewajiban untuk membayar sanksi denda \ndan denda keterlambatan sebesar 2% (dua persen) per \nbulan \ndari \njumlah \nsanksi \ndenda \nyang \nharus \ndibayarkan.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja"
+      ],
+      "quantities": [
+        [
+          "2",
+          "%"
+        ]
+      ],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/59/Ayat/4",
+      "source_text": "Perjanjian kerja waktu tertentu yang didasarkan atas jangka waktu tertentu dapat diadakan untuk paling lama 2 (dua) tahun dan hanya boleh diperpanjang 1 (satu) kali untuk jangka waktu paling lama 1 (satu) tahun.",
+      "description": "Perjanjian kerja waktu tertentu yang didasarkan atas jangka waktu tertentu dapat diadakan untuk paling lama 2 (dua) tahun dan hanya boleh diperpanjang 1 (satu) kali untuk jangka waktu paling lama 1 (satu) tahun.",
+      "severity": "high",
+      "consequence": "Perjanjian kerja untuk waktu tertentu yang tidak memenuhi ketentuan sebagaimana dimaksud dalam ayat (1), ayat (2), ayat (4), ayat (5), dan ayat (6) maka demi hukum menjadi perjanjian kerja waktu tidak tertentu.",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "tahun"
+        ],
+        [
+          "1",
+          "satu",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/65/Ayat/1",
+      "source_text": "Penyerahan sebagian pelaksanaan pekerjaan kepada perusahaan lain dilaksanakan melalui perjanjian pemborongan pekerjaan yang dibuat secara tertulis.",
+      "description": "Penyerahan sebagian pelaksanaan pekerjaan kepada perusahaan lain dilaksanakan melalui perjanjian pemborongan pekerjaan yang dibuat secara tertulis.",
+      "severity": "high",
+      "consequence": "Dalam hal ketentuan sebagaimana dimaksud dalam ayat (2) dan ayat (3) tidak terpenuhi, maka demi hukum status hubungan kerja pekerja/buruh dengan perusahaan penerima pemborongan beralih menjadi hubungan kerja\npekerja/buruh dengan perusahaan pemberi pekerjaan.",
+      "confidence": "high",
+      "subjects": [
+        "perusahaan"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "format_requirement"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/11/Ayat/4",
+      "source_text": "Dalam hal\nhasil\nverifikasi sebagaimana dimaksud\npada ayat\n(3)\nterbukti Pemberi Kerja selain penyelenggara negara nyata-nyata lalai,\nPemberi Kerja selain penyelenggara negara wajib membayar Iuran\nyang menjadi kewajibannya kepada BPJS Ketenagakerjaan sesuai\nprogram yang diwajibkan dalam penahapan kepesertaan.",
+      "description": "Dalam hal\nhasil\nverifikasi sebagaimana dimaksud\npada ayat\n(3)\nterbukti Pemberi Kerja selain penyelenggara negara nyata-nyata lalai,\nPemberi Kerja selain penyelenggara negara wajib membayar Iuran\nyang menjadi kewajibannya kepada BPJS Ketenagakerjaan sesuai\nprogram yang diwajibkan dalam penahapan kepesertaan.",
+      "severity": "high",
+      "consequence": "Pemberi Kerja selain penyelenggara negara yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 6, Pasal 7 ayat (1), Pasal 9 ayat\n(2), Pasal 10 ayat (2) dan ayat (3), Pasal 11 ayat (4), Pasal 19 ayat (1)\ndan ayat (2), dan Pasal 24 dikenai sanksi administratif.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/X/Pasal/79/Ayat/1",
+      "source_text": "Pengusaha wajib memberi waktu istirahat dan cuti kepada pekerja/buruh.",
+      "description": "Pengusaha wajib memberi waktu istirahat dan cuti kepada pekerja/buruh.",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 37 ayat (2), Pasal 44 ayat (1), Pasal 45 ayat (1), Pasal 67 ayat (1), Pasal 71 ayat (2), Pasal 76, Pasal 78 ayat (2), Pasal 79 ayat (1), dan ayat (2), Pasal 85 ayat (3),\ndan Pasal 144, dikenakan sanksi pidana kurungan paling singkat 1 (satu) bulan dan paling lama 12 (dua belas) bulan\ndan/atau denda paling sedikit Rp 10.000.000,00 (sepuluh juta rupiah) dan paling banyak Rp 100.000.000,00 (seratus\njuta rupiah).",
+      "confidence": "high",
+      "subjects": [
+        "pengusaha",
+        "pekerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/VIII/Pasal/47/Ayat/1",
+      "source_text": "Pemberi kerja wajib membayar kompensasi atas setiap tenaga kerja asing yang dipekerjakannya.",
+      "description": "Pemberi kerja wajib membayar kompensasi atas setiap tenaga kerja asing yang dipekerjakannya.",
+      "severity": "high",
+      "consequence": "Menteri atau pejabat yang ditunjuk mengenakan sanksi administratif atas pelanggaran ketentuan-ketentuan sebagaimana diatur dalam Pasal 5, Pasal 6, Pasal 15, Pasal 25, Pasal 38 ayat (2), Pasal 45 ayat (1), Pasal 47 ayat (1),\nPasal 48, Pasal 87, Pasal 106, Pasal 126 ayat (3), dan Pasal 160 ayat (1) dan ayat (2) Undang-undang ini serta\nperaturan pelaksanaannya.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/VI/Pasal/35/Ayat/1",
+      "source_text": "Dalam hal Pemberi Kerja selain penyelenggara negara telah dikenai sanksi administratif sebagaimana dimaksud dalam Pasal 33 ayat (2),\ntetapi\ntetap\ntidak\npatuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya, BPJS Ketenagakerjaan wajib melaporkan ketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nbertangung\njawab\ndi\nbidang\nketenagakerjaan\npada\nPemerintah,\npemerintah\ndaerah\nprovinsi\ndan/atau\npemerintah\ndaerah\nkabupaten/kota\nsesuai\ndengan\nketentuan\nperaturan\nperundang\nundangan.",
+      "description": "Dalam hal Pemberi Kerja selain penyelenggara negara telah dikenai sanksi administratif sebagaimana dimaksud dalam Pasal 33 ayat (2),\ntetapi\ntetap\ntidak\npatuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya, BPJS Ketenagakerjaan wajib melaporkan ketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nbertangung\njawab\ndi\nbidang\nketenagakerjaan\npada\nPemerintah,\npemerintah\ndaerah\nprovinsi\ndan/atau\npemerintah\ndaerah\nkabupaten/kota\nsesuai\ndengan\nketentuan\nperaturan\nperundang\nundangan.",
+      "severity": "high",
+      "consequence": "Dalam hal Pemberi Kerja selain penyelenggara negara telah dikenai sanksi administratif sebagaimana dimaksud dalam Pasal 33 ayat (2),\ntetapi\ntetap\ntidak\npatuh\ndalam\nmembayar\nIuran\ndan\nkewajiban\nlainnya, BPJS Ketenagakerjaan wajib melaporkan ketidakpatuhan\ntersebut\nkepada\nPengawas\nKetenagakerjaan\npada\ninstansi\nyang\nbertangung\njawab\ndi\nbidang\nketenagakerjaan\npada\nPemerintah,\npemerintah\ndaerah\nprovinsi\ndan/atau\npemerintah\ndaerah\nkabupaten/kota\nsesuai\ndengan\nketentuan\nperaturan\nperundang\nundangan.",
+      "confidence": "high",
+      "subjects": [
+        "bpjs",
+        "pemberi_kerja",
+        "bpjs_ketenagakerjaan",
+        "pemerintah",
+        "instansi"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/185/Ayat/1",
+      "source_text": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 42 ayat (1) dan ayat (2), Pasal 68, Pasal 69 ayat (2), Pasal 80, Pasal 82, Pasal 90 ayat (1), Pasal 143, dan Pasal 160 ayat (4) dan ayat (7), dikenakan sanksi pidana\npenjara paling singkat 1 (satu) tahun dan paling lama 4 (empat) tahun dan/atau denda paling sedikit Rp 100.000.000,00\n(seratus juta rupiah) dan paling banyak Rp 400.000.000,00 (empat ratus juta rupiah).",
+      "description": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 42 ayat (1) dan ayat (2), Pasal 68, Pasal 69 ayat (2), Pasal 80, Pasal 82, Pasal 90 ayat (1), Pasal 143, dan Pasal 160 ayat (4) dan ayat (7), dikenakan sanksi pidana\npenjara paling singkat 1 (satu) tahun dan paling lama 4 (empat) tahun dan/atau denda paling sedikit Rp 100.000.000,00\n(seratus juta rupiah) dan paling banyak Rp 400.000.000,00 (empat ratus juta rupiah).",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 42 ayat (1) dan ayat (2), Pasal 68, Pasal 69 ayat (2), Pasal 80, Pasal 82, Pasal 90 ayat (1), Pasal 143, dan Pasal 160 ayat (4) dan ayat (7), dikenakan sanksi pidana\npenjara paling singkat 1 (satu) tahun dan paling lama 4 (empat) tahun dan/atau denda paling sedikit Rp 100.000.000,00\n(seratus juta rupiah) dan paling banyak Rp 400.000.000,00 (empat ratus juta rupiah).",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "tahun"
+        ],
+        [
+          "4",
+          "empat",
+          "tahun"
+        ],
+        [
+          "100.000.000,00"
+        ],
+        [
+          "400.000.000,00"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "minimum",
+        "maximum",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/III/Pasal/19/Ayat/1",
+      "source_text": "Pemberi Kerja selain penyelenggara negara wajib menyetor Iuran JHT yang menjadi kewajibannya sebagaimana dimaksud dalam Pasal 16\nkepada BPJS Ketenagakerjaan.",
+      "description": "Pemberi Kerja selain penyelenggara negara wajib menyetor Iuran JHT yang menjadi kewajibannya sebagaimana dimaksud dalam Pasal 16\nkepada BPJS Ketenagakerjaan.",
+      "severity": "high",
+      "consequence": "Pemberi Kerja selain penyelenggara negara yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 6, Pasal 7 ayat (1), Pasal 9 ayat\n(2), Pasal 10 ayat (2) dan ayat (3), Pasal 11 ayat (4), Pasal 19 ayat (1)\ndan ayat (2), dan Pasal 24 dikenai sanksi administratif.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/58/Ayat/1",
+      "source_text": "Perjanjian kerja untuk waktu tertentu tidak dapat mensyaratkan adanya masa percobaan kerja.",
+      "description": "Perjanjian kerja untuk waktu tertentu tidak dapat mensyaratkan adanya masa percobaan kerja.",
+      "severity": "high",
+      "consequence": "Dalam hal disyaratkan masa percobaan kerja dalam perjanjian kerja sebagaimana dimaksud dalam ayat (1), masa percobaan kerja yang disyaratkan batal demi hukum.",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "tidak_dapat",
+        "prohibition"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/59/Ayat/2",
+      "source_text": "Perjanjian kerja untuk waktu tertentu tidak dapat diadakan untuk pekerjaan yang bersifat tetap.",
+      "description": "Perjanjian kerja untuk waktu tertentu tidak dapat diadakan untuk pekerjaan yang bersifat tetap.",
+      "severity": "high",
+      "consequence": "Perjanjian kerja untuk waktu tertentu yang tidak memenuhi ketentuan sebagaimana dimaksud dalam ayat (1), ayat (2), ayat (4), ayat (5), dan ayat (6) maka demi hukum menjadi perjanjian kerja waktu tidak tertentu.",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "tidak_dapat",
+        "prohibition"
+      ]
+    },
+    {
+      "node_id": "UU/2004/2/Bab/V/Pasal/122/Ayat/1",
+      "source_text": "Barang siapa yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 12 ayat (1), Pasal 22 ayat (1) dan ayat (3), Pasal 47 ayat (1) dan ayat (3), Pasal 90 ayat (2), Pasal 91 ayat (1) dan ayat (3), dikenakan sanksi pidana kurungan paling \nsingkat 1 (satu) bulan dan paling lama 6 (enam) bulan dan/atau denda paling sedikit Rp 10.000.000,00 (sepuluh juta \nrupiah) dan paling banyak Rp 50.000.000,00 (lima puluh juta rupiah).",
+      "description": "Barang siapa yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 12 ayat (1), Pasal 22 ayat (1) dan ayat (3), Pasal 47 ayat (1) dan ayat (3), Pasal 90 ayat (2), Pasal 91 ayat (1) dan ayat (3), dikenakan sanksi pidana kurungan paling \nsingkat 1 (satu) bulan dan paling lama 6 (enam) bulan dan/atau denda paling sedikit Rp 10.000.000,00 (sepuluh juta \nrupiah) dan paling banyak Rp 50.000.000,00 (lima puluh juta rupiah).",
+      "severity": "critical",
+      "consequence": "Barang siapa yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 12 ayat (1), Pasal 22 ayat (1) dan ayat (3), Pasal 47 ayat (1) dan ayat (3), Pasal 90 ayat (2), Pasal 91 ayat (1) dan ayat (3), dikenakan sanksi pidana kurungan paling \nsingkat 1 (satu) bulan dan paling lama 6 (enam) bulan dan/atau denda paling sedikit Rp 10.000.000,00 (sepuluh juta \nrupiah) dan paling banyak Rp 50.000.000,00 (lima puluh juta rupiah).",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "bulan"
+        ],
+        [
+          "6",
+          "enam",
+          "bulan"
+        ],
+        [
+          "10.000.000,00"
+        ],
+        [
+          "50.000.000,00"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "minimum",
+        "maximum",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2021/34/Bab/II/Pasal/6/Ayat/2",
+      "source_text": "Dalam hal Pemberi Kerja TKA akan mempekerjakan  TKA yang sedang dipekerjakan oleh Pemberi Kerja TKA \nlain, masing-masing Pemberi Kerja TKA wajib memiliki \nPengesahan RPTKA.",
+      "description": "Dalam hal Pemberi Kerja TKA akan mempekerjakan  TKA yang sedang dipekerjakan oleh Pemberi Kerja TKA \nlain, masing-masing Pemberi Kerja TKA wajib memiliki \nPengesahan RPTKA.",
+      "severity": "high",
+      "consequence": "Sanksi denda sebagaimana dimaksud dalam Pasal 36  ayat (1) huruf a dikenakan kepada Pemberi Kerja TKA \nyang melanggar ketentuan tidak memiliki Pengesahan \nRPTKA sebagaimana dimaksud dalam Pasal 6 ayat (1), \nPasal 6 ayat (2), dan Pasal 19 ayat (6).",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/9/Ayat/2",
+      "source_text": "Pemberi Kerja tempat kerja baru wajib meneruskan kepesertaan Pekerja dengan melaporkan Kartu Kepesertaan BPJS Ketenagakerjaan\ndan membayar Iuran JHT kepada BPJS Ketenagakerjaan sejak Pekerja\nbekerja pada Pemberi Kerja tempat kerja baru.",
+      "description": "Pemberi Kerja tempat kerja baru wajib meneruskan kepesertaan Pekerja dengan melaporkan Kartu Kepesertaan BPJS Ketenagakerjaan\ndan membayar Iuran JHT kepada BPJS Ketenagakerjaan sejak Pekerja\nbekerja pada Pemberi Kerja tempat kerja baru.",
+      "severity": "high",
+      "consequence": "Pemberi Kerja selain penyelenggara negara yang melanggar ketentuan sebagaimana dimaksud dalam Pasal 6, Pasal 7 ayat (1), Pasal 9 ayat\n(2), Pasal 10 ayat (2) dan ayat (3), Pasal 11 ayat (4), Pasal 19 ayat (1)\ndan ayat (2), dan Pasal 24 dikenai sanksi administratif.",
+      "confidence": "high",
+      "subjects": [
+        "pemberi_kerja",
+        "pekerja",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/184/Ayat/1",
+      "source_text": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 167 ayat (5), dikenakan sanksi pidana penjara paling singkat 1 (satu) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 100.000.000,00 (seratus\njuta rupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "description": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 167 ayat (5), dikenakan sanksi pidana penjara paling singkat 1 (satu) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 100.000.000,00 (seratus\njuta rupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "severity": "critical",
+      "consequence": "Barang siapa melanggar ketentuan sebagaimana dimaksud dalam Pasal 167 ayat (5), dikenakan sanksi pidana penjara paling singkat 1 (satu) tahun dan paling lama 5 (lima) tahun dan/atau denda paling sedikit Rp 100.000.000,00 (seratus\njuta rupiah) dan paling banyak Rp 500.000.000,00 (lima ratus juta rupiah).",
+      "confidence": "high",
+      "subjects": [],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "tahun"
+        ],
+        [
+          "5",
+          "lima",
+          "tahun"
+        ],
+        [
+          "100.000.000,00"
+        ],
+        [
+          "500.000.000,00"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "minimum",
+        "maximum",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/II/Pasal/11/Ayat/4",
+      "source_text": "BPJS Ketenagakerjaan wajib mengeluarkan nomor kepesertaan paling lama 1 (satu) hari kerja sejak formulir pendaftaran diterima secara\nlengkap dan benar serta Iuran pertama dibayar lunas kepada BPJS\nKetenagakerjaan.",
+      "description": "BPJS Ketenagakerjaan wajib mengeluarkan nomor kepesertaan paling lama 1 (satu) hari kerja sejak formulir pendaftaran diterima secara\nlengkap dan benar serta Iuran pertama dibayar lunas kepada BPJS\nKetenagakerjaan.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "bpjs",
+        "bpjs_ketenagakerjaan"
+      ],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "wajib",
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2021/34/Bab/III/Pasal/15/Ayat/4",
+      "source_text": "Data calon TKA dan dokumen dilakukan verifikasi oleh  Menteri atau pejabat yang ditunjuk paling lama 2 (dua) \nhari kerja.",
+      "description": "Data calon TKA dan dokumen dilakukan verifikasi oleh  Menteri atau pejabat yang ditunjuk paling lama 2 (dua) \nhari kerja.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "menteri"
+      ],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "UU/2004/2/Bab/III/Pasal/64",
+      "source_text": "Untuk dapat diangkat menjadi Hakim Ad-Hoc pada Pengadilan Hubungan Industrial dan Hakim Ad-Hoc pada Mahkamah \nAgung, harus memenuhi syarat sebagai berikut: \na. warga negara Indonesia; \nb. bertaqwa kepada Tuhan Yang Maha Esa; \nc. setia kepada Pancasila dan Undang-Undang Dasar Negara Republik Indonesia Tahun 1945; \nd. berumur paling rendah 30 (tiga puluh) tahun; \ne. berbadan sehat sesuai dengan keterangan dokter; \nf. berwibawa, jujur, adil, dan berkelakuan tidak tercela;  \ng. berpendidikan serendah-rendahnya Strata Satu (S-1) kecuali bagi Hakim Ad-Hoc pada Mahkamah Agung syarat pendidikan\nSarjana Hukum; dan \nh. berpengalaman di bidang hubungan industrial minimal 5 (lima) tahun.",
+      "description": "Untuk dapat diangkat menjadi Hakim Ad-Hoc pada Pengadilan Hubungan Industrial dan Hakim Ad-Hoc pada Mahkamah \nAgung, harus memenuhi syarat sebagai berikut: \na.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "hakim"
+      ],
+      "quantities": [
+        [
+          "30",
+          "tiga puluh",
+          "tahun"
+        ],
+        [
+          "5",
+          "lima",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "harus",
+        "minimum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/II/Pasal/12/Ayat/2",
+      "source_text": "BPJS Ketenagakerjaan\npaling\nlama\n3\n(tiga)\nhari\nkerja\nwajib\nmenyerahkan\nKartu\nPeserta\nBPJS\nKetenagakerjaan\nsebagaimana\ndimaksud pada ayat (1) secara langsung kepada Peserta, melalui\nwadah, atau kelompok tertentu yang dibentuk oleh Peserta.",
+      "description": "BPJS Ketenagakerjaan\npaling\nlama\n3\n(tiga)\nhari\nkerja\nwajib\nmenyerahkan\nKartu\nPeserta\nBPJS\nKetenagakerjaan\nsebagaimana\ndimaksud pada ayat (1) secara langsung kepada Peserta, melalui\nwadah, atau kelompok tertentu yang dibentuk oleh Peserta.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "peserta",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [
+        [
+          "3",
+          "tiga",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2021/34/Bab/III/Pasal/21/Ayat/5",
+      "source_text": "Dalam hal permohonan perpanjangan Pengesahan  RPTKA dinyatakan lengkap dan benar, Menteri atau \npejabat yang ditunjuk menerbitkan Pengesahan RPTKA \nperpanjangan paling lama 2 (dua) hari kerja.",
+      "description": "Dalam hal permohonan perpanjangan Pengesahan  RPTKA dinyatakan lengkap dan benar, Menteri atau \npejabat yang ditunjuk menerbitkan Pengesahan RPTKA \nperpanjangan paling lama 2 (dua) hari kerja.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "menteri"
+      ],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/IV/Pasal/27/Ayat/3",
+      "source_text": "Hasil pengembangan sebagaimana dimaksud pada ayat (1) dan ayat (2) paling sedikit sebesar rata-rata bunga deposito counter rate bank\npemerintah untuk jangka waktu 1 (satu) tahun.",
+      "description": "Hasil pengembangan sebagaimana dimaksud pada ayat (1) dan ayat (2) paling sedikit sebesar rata-rata bunga deposito counter rate bank\npemerintah untuk jangka waktu 1 (satu) tahun.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pemerintah"
+      ],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "minimum"
+      ]
+    },
+    {
+      "node_id": "PP/2021/36/Bab/VIII/Pasal/54/Ayat/1",
+      "source_text": "Pembayaran Upah harus dilakukan dengan mata uang  rupiah Negara Kesatuan Republik Indonesia.",
+      "description": "Pembayaran Upah harus dilakukan dengan mata uang  rupiah Negara Kesatuan Republik Indonesia.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "PP/2021/36/Bab/V/Pasal/34/Ayat/6",
+      "source_text": "Dalam hal Upah minimum kabupaten/kota tahun  berjalan lebih tinggi dari batas atas Upah minimum \nkabupaten/kota maka bupati/wali kota  \nharus merekomendasikan kepada gubernur nilai Upah \nminimum kabupaten/kota tahun berikutnya sama \ndengan nilai Upah minimum kabupaten/kota tahun \nberjalan.",
+      "description": "Dalam hal Upah minimum kabupaten/kota tahun  berjalan lebih tinggi dari batas atas Upah minimum \nkabupaten/kota maka bupati/wali kota  \nharus merekomendasikan kepada gubernur nilai Upah \nminimum kabupaten/kota tahun berikutnya sama \ndengan nilai Upah minimum kabupaten/kota tahun \nberjalan.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "gubernur",
+        "bupati"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/164/Ayat/2",
+      "source_text": "Kerugian perusahaan sebagaimana dimaksud dalam ayat (1) harus dibuktikan dengan laporan keuangan 2 (dua) tahun terakhir yang telah diaudit oleh akuntan publik.",
+      "description": "Kerugian perusahaan sebagaimana dimaksud dalam ayat (1) harus dibuktikan dengan laporan keuangan 2 (dua) tahun terakhir yang telah diaudit oleh akuntan publik.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "perusahaan"
+      ],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XI/Pasal/140/Ayat/2",
+      "source_text": "Pemberitahuan sebagaimana dimaksud dalam ayat (1) sekurang-kurang-nya memuat: a. waktu (hari, tanggal, dan jam) dimulai dan diakhiri mogok kerja;\nb. tempat mogok kerja;\nc. alasan dan sebab-sebab mengapa harus melakukan mogok kerja; dan\nd. tanda tangan ketua dan sekretaris dan/atau masing-masing ketua dan sekretaris serikat pekerja/serikat buruh\nsebagai penanggung jawab mogok kerja.",
+      "description": "alasan dan sebab-sebab mengapa harus melakukan mogok kerja;",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pekerja",
+        "serikat_pekerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "PP/2021/35/Bab/V/Pasal/39/Ayat/1",
+      "source_text": "Pekerja/Buruh yang telah mendapatkan surat  pemberitahuan Pemutusan Hubungan Kerja dan \nmenyatakan \nmenolak, \nharus \nmembuat \nsurat \npenolakan disertai alasan paling lama 7 (tujuh) \nhari \nkerja \nsetelah \nditerimanya \nsurat \npemberitahuan.",
+      "description": "Pekerja/Buruh yang telah mendapatkan surat  pemberitahuan Pemutusan Hubungan Kerja dan \nmenyatakan \nmenolak, \nharus \nmembuat \nsurat \npenolakan disertai alasan paling lama 7 (tujuh) \nhari \nkerja \nsetelah \nditerimanya \nsurat \npemberitahuan.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pekerja"
+      ],
+      "quantities": [
+        [
+          "7",
+          "tujuh",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "harus",
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2021/37/Bab/III/Pasal/11/Ayat/6",
+      "source_text": "Upah yang digunakan sebagai dasar perhitungan  iuran \nsebagaimana \ndimaksud \npada \nayat \n(2) \nmerupakan \nUpah \nterakhir \nPekerja/Buruh \nyang \ndilaporkan \noleh \nPengusaha \nkepada \nBPJS \nKetenagakerjaan dan tidak melebihi batas atas Upah.",
+      "description": "Upah yang digunakan sebagai dasar perhitungan  iuran \nsebagaimana \ndimaksud \npada \nayat \n(2) \nmerupakan \nUpah \nterakhir \nPekerja/Buruh \nyang \ndilaporkan \noleh \nPengusaha \nkepada \nBPJS \nKetenagakerjaan dan tidak melebihi batas atas Upah.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pengusaha",
+        "pekerja",
+        "bpjs"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/V/Pasal/25/Ayat/1",
+      "source_text": "Pemagangan yang dilakukan di luar wilayah Indonesia wajib mendapat izin dari Menteri atau pejabat yang ditunjuk.",
+      "description": "Pemagangan yang dilakukan di luar wilayah Indonesia wajib mendapat izin dari Menteri atau pejabat yang ditunjuk.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "menteri"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2021/36/Bab/V/Pasal/29/Ayat/4",
+      "source_text": "Pelaksanaan ketentuan sebagaimana dimaksud pada  ayat (1) dan ayat (2) tidak boleh bertentangan dengan \nkebijakan pengupahan sebagaimana dimaksud dalam \nPasal 4. \n  \nBagian Ketiga  \nUpah Minimum Kabupaten/Kota",
+      "description": "Pelaksanaan ketentuan sebagaimana dimaksud pada  ayat (1) dan ayat (2) tidak boleh bertentangan dengan \nkebijakan pengupahan sebagaimana dimaksud dalam \nPasal 4.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "tidak_boleh"
+      ]
+    },
+    {
+      "node_id": "UU/2004/2/Bab/IV/Pasal/96/Ayat/1",
+      "source_text": "Apabila dalam persidangan pertama, secara nyata-nyata pihak pengusaha terbukti tidak melaksanakan kewajibannya  sebagaimana dimaksud dalam Pasal 155 ayat (3) Undang-undang Nomor 13 Tahun 2003 tentang Ketenagakerjaan, \nHakim Ketua Sidang harus segera menjatuhkan Putusan Sela berupa perintah kepada pengusaha untuk membayar upah \nbeserta hak-hak lainnya yang biasa diterima pekerja/buruh yang bersangkutan.",
+      "description": "Apabila dalam persidangan pertama, secara nyata-nyata pihak pengusaha terbukti tidak melaksanakan kewajibannya  sebagaimana dimaksud dalam Pasal 155 ayat (3) Undang-undang Nomor 13 Tahun 2003 tentang Ketenagakerjaan, \nHakim Ketua Sidang harus segera menjatuhkan Putusan Sela berupa perintah kepada pengusaha untuk membayar upah \nbeserta hak-hak lainnya yang biasa diterima pekerja/buruh yang bersangkutan.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pengusaha",
+        "pekerja",
+        "hakim"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/X/Pasal/74/Ayat/1",
+      "source_text": "Siapapun dilarang mempekerjakan dan melibatkan anak pada pekerjaan-pekerjaan yang terburuk.",
+      "description": "Siapapun dilarang mempekerjakan dan melibatkan anak pada pekerjaan-pekerjaan yang terburuk.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "dilarang"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/III/Pasal/17/Ayat/1",
+      "source_text": "Pengelompokan tingkat\nrisiko\nlingkungan\nkerja\nsebagaimana\ndimaksud dalam Pasal 16 ayat (2) dievaluasi paling lama setiap 2\n(dua) tahun.",
+      "description": "Pengelompokan tingkat\nrisiko\nlingkungan\nkerja\nsebagaimana\ndimaksud dalam Pasal 16 ayat (2) dievaluasi paling lama setiap 2\n(dua) tahun.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [
+        [
+          "2",
+          "dua",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2021/37/Bab/IV/Pasal/39/Ayat/5",
+      "source_text": "Pengusaha  mengajukan \npermintaan \npenggantian \nmanfaat uang tunai kepada BPJS Ketenagakerjaan \npaling lama 3 (tiga) bulan sejak Pengusaha membayar \nhak Peserta.",
+      "description": "Pengusaha  mengajukan \npermintaan \npenggantian \nmanfaat uang tunai kepada BPJS Ketenagakerjaan \npaling lama 3 (tiga) bulan sejak Pengusaha membayar \nhak Peserta.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pengusaha",
+        "peserta",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [
+        [
+          "3",
+          "tiga",
+          "bulan"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/III/Pasal/16/Ayat/3",
+      "source_text": "Iuran JKK sebagaimana dimaksud pada ayat (1) wajib dibayar oleh Pemberi Kerja selain penyelenggara negara.\nwww.peraturan.go.id\n\n2015, No.154\n9",
+      "description": "Iuran JKK sebagaimana dimaksud pada ayat (1) wajib dibayar oleh Pemberi Kerja selain penyelenggara negara.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pemberi_kerja"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2004/2/Bab/II/Pasal/36/Ayat/1",
+      "source_text": "Dalam hal arbiter tunggal mengundurkan diri atau meninggal dunia, maka para pihak harus menunjuk arbiter pengganti  yang disepakati oleh kedua belah pihak.",
+      "description": "Dalam hal arbiter tunggal mengundurkan diri atau meninggal dunia, maka para pihak harus menunjuk arbiter pengganti  yang disepakati oleh kedua belah pihak.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "arbiter"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "harus"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XIV/Pasal/181",
+      "source_text": "Pegawai pengawas ketenagakerjaan dalam melaksanakan tugasnya sebagaimana dimaksud dalam Pasal 176 wajib:\na. merahasiakan segala sesuatu yang menurut sifatnya patut dirahasiakan;\nb. tidak menyalahgunakan kewenangannya.",
+      "description": "Pegawai pengawas ketenagakerjaan dalam melaksanakan tugasnya sebagaimana dimaksud dalam Pasal 176 wajib:\na.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/9/Ayat/1",
+      "source_text": "Peserta yang\npindah\ntempat\nkerja\nwajib\nmemberitahukan\nkepesertaannya dalam program JHT kepada Pemberi Kerja tempat\nkerja\nbaru\ndengan\nmenunjukkan\nKartu\nKepesertaan\nBPJS\nKetenagakerjaan yang dimilikinya.",
+      "description": "Peserta yang\npindah\ntempat\nkerja\nwajib\nmemberitahukan\nkepesertaannya dalam program JHT kepada Pemberi Kerja tempat\nkerja\nbaru\ndengan\nmenunjukkan\nKartu\nKepesertaan\nBPJS\nKetenagakerjaan yang dimilikinya.",
+      "severity": "high",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pemberi_kerja",
+        "peserta",
+        "bpjs"
+      ],
+      "quantities": [],
+      "obligation_markers": [
+        "wajib"
+      ]
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/171",
+      "source_text": "Pekerja/buruh yang mengalami pemutusan hubungan kerja tanpa penetapan lembaga penyelesaian perselisihan hubungan\nindustrial yang berwenang sebagaimana dimaksud dalam Pasal 158 ayat (1), Pasal 160 ayat (3), dan Pasal 162, dan\npekerja/buruh yang bersangkutan tidak dapat menerima pemutusan hubungan kerja tersebut, maka pekerja/buruh dapat\nmengajukan gugatan ke lembaga penyelesaian perselisihan hubungan industrial dalam waktu paling lama 1 (satu) tahun\nsejak tanggal dilakukan pemutusan hubungan kerjanya.",
+      "description": "Pekerja/buruh yang mengalami pemutusan hubungan kerja tanpa penetapan lembaga penyelesaian perselisihan hubungan\nindustrial yang berwenang sebagaimana dimaksud dalam Pasal 158 ayat (1), Pasal 160 ayat (3), dan Pasal 162, dan\npekerja/buruh yang bersangkutan tidak dapat menerima pemutusan hubungan kerja tersebut, maka pekerja/buruh dapat\nmengajukan gugatan ke lembaga penyelesaian perselisihan hubungan industrial dalam waktu paling lama 1 (satu) tahun\nsejak tanggal dilakukan pemutusan hubungan...",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pekerja",
+        "lembaga_penyelesaian"
+      ],
+      "quantities": [
+        [
+          "1",
+          "satu",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "tidak_dapat",
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/45/Bab/II/Pasal/5/Ayat/3",
+      "source_text": "Berdasarkan pendaftaran sebagaimana dimaksud pada ayat (1), BPJS Ketenagakerjaan melakukan verifikasi kepada Pemberi Kerja selain\npenyelenggara negara paling lama 7 (tujuh) hari kerja terhitung sejak\ntanggal pendaftaran dilakukan.",
+      "description": "Berdasarkan pendaftaran sebagaimana dimaksud pada ayat (1), BPJS Ketenagakerjaan melakukan verifikasi kepada Pemberi Kerja selain\npenyelenggara negara paling lama 7 (tujuh) hari kerja terhitung sejak\ntanggal pendaftaran dilakukan.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [
+        "pemberi_kerja",
+        "bpjs_ketenagakerjaan",
+        "bpjs"
+      ],
+      "quantities": [
+        [
+          "7",
+          "tujuh",
+          "hari"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    },
+    {
+      "node_id": "PP/2015/44/Bab/V/Pasal/48/Ayat/2",
+      "source_text": "Hak atas manfaat JKK sebagaimana dimaksud pada ayat (1) diberikan apabila penyakit akibat kerja timbul dalam jangka waktu paling lama\n3 (tiga) tahun terhitung sejak hubungan kerja berakhir.",
+      "description": "Hak atas manfaat JKK sebagaimana dimaksud pada ayat (1) diberikan apabila penyakit akibat kerja timbul dalam jangka waktu paling lama\n3 (tiga) tahun terhitung sejak hubungan kerja berakhir.",
+      "severity": "medium",
+      "consequence": "",
+      "confidence": "medium",
+      "subjects": [],
+      "quantities": [
+        [
+          "3",
+          "tiga",
+          "tahun"
+        ]
+      ],
+      "obligation_markers": [
+        "duration_limit",
+        "maximum"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "node_id": "PP/2021/36/Bab/II/Pasal/13/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description accurately reproduces the source text and the obligation marker 'wajib' is correct. However, the subject is misidentified as 'pekerja' — pekerja/buruh is the beneficiary (recipient), not the party bearing the obligation. The obligated subject should be the pengusaha (employer) on certain types of businesses ('usaha tertentu'). The severity of 'high' is debatable since the consequence is administrative sanctions (not criminal), which typically warrants a 'medium' severity. The consequence text is also truncated.",
+      "errors": [
+        "Subject misidentified: the obligated party is pengusaha (employer), not pekerja (worker); pekerja is the beneficiary",
+        "Severity 'high' is questionable given the consequence is only administrative sanctions (sanksi administratif), not criminal penalties",
+        "Consequence text is incomplete/truncated"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/167/Ayat/5",
+      "verdict": "correct",
+      "reasoning": "The description is a verbatim reproduction of the source text, accurately capturing the obligation on the pengusaha to pay 2x severance, 1x long-service pay, and compensation rights when a worker terminated due to retirement age was not enrolled in a pension program. The subjects, quantities, obligation marker ('wajib'), and severity are all consistent. The consequence references Pasal 186 of UU 13/2003 which indeed prescribes criminal sanctions for violations of Pasal 167 ayat (5), so the stated consequence is accurate.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/34/Bab/VI/Pasal/32/Ayat/3",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description and obligation marker ('wajib') are correctly extracted from the source text. However, 'menteri' should not be listed as a subject of the obligation — the Minister is the recipient of the report, not a duty-bearer. The severity is assessed as 'high' but the referenced consequence (sanksi penghentian sementara) is an administrative sanction (temporary suspension of RPTKA application), which is arguably medium severity rather than high. The consequence text itself appears to be sourced from a different pasal (Pasal 36), which is acceptable cross-referencing but the excerpt is incomplete (cuts off at 'huruf b... a.').",
+      "errors": [
+        "Subject 'menteri' is incorrectly listed as a duty-bearer; the Minister is the object/recipient of the reporting obligation, not a subject bound by it.",
+        "Severity 'high' is debatable — the sanction is administrative (temporary suspension), which more reasonably maps to medium severity.",
+        "Consequence text is truncated/incomplete, ending abruptly at 'a.'"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/153/Ayat/2",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text as both the description and consequence. The obligation marker 'wajib' is correctly identified, subjects (pengusaha, pekerja) are correct, severity is reasonably assessed as high given the legal nullity (batal demi hukum) and mandatory reinstatement obligation, and no quantities exist in the source text.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/45/Bab/VI/Pasal/36/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation marker 'wajib' and the core obligation (BPJS Ketenagakerjaan must report non-compliance to labor inspectors) are correctly identified. However, the subjects list is problematic: the obligated subject is BPJS Ketenagakerjaan alone, while 'pemberi_kerja' is the non-compliant party (not a duty-bearer here), and 'pemerintah'/'instansi' are merely the recipients of the report, not subjects bearing obligations. The 'Consequence' field incorrectly repeats the entire norm text — this provision describes BPJS's obligation to report, not a consequence/sanction itself. Severity 'high' is debatable since this is a reporting obligation, not a direct sanction on workers or employers.",
+      "errors": [
+        "Subject list over-inclusive: the obligation-bearer is solely BPJS Ketenagakerjaan; pemberi_kerja is the non-compliant party, not a duty-holder in this norm; pemerintah/instansi are report recipients, not obligated subjects",
+        "Consequence field incorrectly repeats the norm text — this article establishes an obligation, not a consequence/sanction",
+        "Severity 'high' is questionable for what is essentially a mandatory reporting duty by BPJS, not a direct punitive provision"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/183/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and quantities accurately reflect the source text. The severity 'critical' is reasonable given the heavy criminal sanctions. However, the subjects field shows '(none detected)' — while the source uses 'barang siapa' (whoever), the underlying obligation references Pasal 74 which concerns the prohibition of employing children in the worst forms of child labor, making 'pengusaha' the most likely subject. Additionally, the obligation markers are mischaracterized: these are not 'obligation markers' but rather sanction parameters (minimum/maximum prison terms and fines). The consequence field simply repeats the entire provision verbatim rather than being properly separated from the description.",
+      "errors": [
+        "Subjects listed as '(none detected)' — 'barang siapa' is present and contextually refers to pengusaha or anyone who violates Pasal 74",
+        "Obligation markers mischaracterized as 'duration_limit, minimum, maximum, maximum' — these are sanction parameters (criminal penalties), not obligation thresholds",
+        "Consequence field is identical to the description, showing no meaningful extraction of the norm's structure"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/X/Pasal/61/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation is correctly identified — BPJS Ketenagakerjaan wajib melaporkan ketidakpatuhan kepada Pengawas Ketenagakerjaan. However, the extraction has several issues: (1) the description is merely a truncated copy of the source text rather than a proper characterization/summary; (2) the subjects list includes 'pemberi_kerja' and 'pemerintah' which are not the obligated party — the sole obligation bearer is BPJS Ketenagakerjaan; (3) the 'consequence' field repeats the same truncated text as the description, conflating the trigger condition with the consequence; (4) severity 'high' is debatable since this is a reporting obligation on BPJS, not a direct sanction on the employer.",
+      "errors": [
+        "Subject list over-inclusive: the obligated subject is solely BPJS Ketenagakerjaan, not pemberi_kerja or pemerintah (they are context/recipient, not norm bearers)",
+        "Description is a truncated verbatim copy of the source rather than a meaningful paraphrase or characterization",
+        "Consequence field incorrectly repeats the entire provision text; the provision does not specify a consequence for BPJS failing to report — it establishes the reporting obligation itself",
+        "Severity 'high' is questionable for a procedural reporting duty imposed on BPJS"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/V/Pasal/15",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation exists in the source text (penyelenggara pelatihan kerja wajib memenuhi persyaratan), and the obligation marker 'wajib' is correctly identified. However, the description is truncated — it only captures 'a.' without listing the full requirements (tenaga kepelatihan, kurikulum, sarana/prasarana, dana). The subject 'penyelenggara pelatihan kerja' was not detected despite being explicitly stated. The consequence referencing Pasal 190 (sanksi administratif) is plausible cross-reference from UU 13/2003 but is not contained in the source text of Pasal 15 itself.",
+      "errors": [
+        "Description is severely truncated — only captures 'a.' without the substantive content of the requirements",
+        "Subject 'penyelenggara pelatihan kerja' not detected despite being explicitly stated in the source",
+        "Consequence is drawn from a different pasal (likely Pasal 190), not from Pasal 15 itself — while arguably valid as cross-reference, it is not part of this provision's text"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/VI/Pasal/35/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation marker ('wajib') are accurately extracted from the source text. However, the subjects field shows 'none detected' when the subject is clearly 'pelaksana penempatan tenaga kerja' as stated in the provision. Additionally, the consequence text appears to be copied from Pasal 183 UU 13/2003 which does reference Pasal 35 ayat (2), so the cross-reference is plausible, but the consequence text is truncated/corrupted (cuts off mid-sentence with a partial URL), making it unreliable. The severity of 'critical' is reasonable given the criminal sanctions referenced.",
+      "errors": [
+        "Subject not detected: 'pelaksana penempatan tenaga kerja' is clearly the obligated subject in the source text",
+        "Consequence text is truncated and corrupted — contains a file path URL fragment, making it incomplete and unreliable"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2004/2/Bab/V/Pasal/116/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and consequence simply reproduce the source text verbatim, which is technically accurate but not a proper extraction/characterization. The subject (mediator) and quantity (30 hari kerja) are correct. However, the severity is debatable — the sanction is administrative discipline (hukuman disiplin), not criminal, which typically warrants a 'medium' rather than 'high' severity. Additionally, the quantity unit should be 'hari kerja' (working days), not just 'hari'. The obligation marker 'tidak_dapat' is a mischaracterization — the text describes a condition (failure to resolve within 30 days without valid reason) rather than a prohibition marker.",
+      "errors": [
+        "Severity 'high' is questionable — administrative disciplinary sanctions are generally medium severity, not high",
+        "Quantity unit extracted as 'hari' but source specifies 'hari kerja' (working days)",
+        "Description and consequence are verbatim copies of source text rather than meaningful characterizations",
+        "Obligation marker 'tidak_dapat' mischaracterizes the provision — it is a conditional sanction clause, not a direct prohibition"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/34/Bab/VII/Pasal/38/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation exists in the source text and the subject (pemberi_kerja/Pemberi Kerja TKA) and quantity (2% per bulan) are correctly identified. However, the description and consequence fields are identical verbatim copies of the source text rather than meaningful characterizations — the 'consequence' field should describe the legal consequence, not repeat the entire provision. Additionally, the severity 'high' is debatable since this provision describes a late payment penalty (denda keterlambatan), which is an administrative financial sanction rather than a criminal or severe penalty.",
+      "errors": [
+        "Description is a verbatim copy rather than a meaningful characterization of the norm",
+        "Consequence field repeats the entire provision instead of identifying the actual consequence (payment of fine + 2% monthly late penalty)",
+        "Severity 'high' is arguable — a 2% monthly late fee on an administrative fine is more appropriately 'medium' as it is a financial administrative sanction, not a criminal penalty or license revocation"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/59/Ayat/4",
+      "verdict": "partially_correct",
+      "reasoning": "The description and quantities accurately reflect the source text. However, the extraction fails to identify the subject (which implicitly is 'pengusaha' or parties to the PKWT). The consequence cited (from Ayat 7 of the same Pasal) is not contained in the source text of Ayat 4 itself — it's drawn from a different ayat, which is a cross-reference rather than an extraction error per se, but it conflates the source provision. The severity 'high' is reasonable given the legal consequence of conversion to PKWTT.",
+      "errors": [
+        "Subject not detected — the implicit subject is the employer/parties entering the PKWT",
+        "Consequence is sourced from Pasal 59 Ayat 7, not from the text of Ayat 4 itself; this is an inference across provisions rather than a direct extraction"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/65/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description accurately reproduces the source text, and the subject 'perusahaan' is reasonable. However, the consequence cited comes from Ayat 8 of the same Pasal, not from Ayat 1 itself. Additionally, that consequence in Ayat 8 specifically references violations of ayat (2) and ayat (3), not ayat (1)'s written-agreement requirement. The severity 'high' is debatable — while consequences exist elsewhere in the Pasal, they are not directly triggered by a failure to make the agreement in writing (ayat 1), making the severity attribution questionable.",
+      "errors": [
+        "Consequence is drawn from Ayat 8 which references non-compliance with ayat (2) and (3), not ayat (1)'s written-form requirement",
+        "Severity 'high' is not directly supported by the source text of Ayat 1 alone, since the legal consequence in Ayat 8 does not explicitly cover violation of the written-form requirement"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/11/Ayat/4",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation (wajib membayar Iuran) and the primary subject (Pemberi Kerja selain penyelenggara negara) are correctly identified, and the obligation marker 'wajib' is correct. However, listing 'bpjs_ketenagakerjaan' and 'bpjs' as subjects is inaccurate — BPJS Ketenagakerjaan is the recipient of payment, not a subject bearing the obligation. Additionally, the 'Consequence' field cites text from a different Pasal (likely Pasal 31 or similar sanksi administratif provision), which is not contained in the source text of Pasal 11 Ayat 4 itself. The severity of 'high' is debatable since the consequence is only administrative sanctions, not criminal penalties.",
+      "errors": [
+        "BPJS Ketenagakerjaan is incorrectly listed as a subject — it is the recipient, not the obligated party",
+        "The Consequence text is sourced from a different provision (sanksi administratif article), not from Pasal 11 Ayat 4 itself",
+        "Severity 'high' is questionable given that the consequence is only administrative sanctions"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/X/Pasal/79/Ayat/1",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text of Pasal 79 Ayat (1). The obligation (wajib memberi waktu istirahat dan cuti), the subject (pengusaha toward pekerja/buruh), the obligation marker (wajib), and the absence of specific quantities all match the source. The severity is assessed as 'critical' which is reasonable given that violation carries criminal sanctions (pidana kurungan up to 12 months and/or fines up to Rp 100 million) under Pasal 187 UU 13/2003, which explicitly references Pasal 79 ayat (1).",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/VIII/Pasal/47/Ayat/1",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reflects the source text. The obligation ('wajib membayar kompensasi'), subject ('pemberi kerja'), and description match verbatim. The consequence referencing sanksi administratif under Pasal 190 which lists Pasal 47 ayat (1) is a valid cross-reference from the same UU 13/2003. The severity of 'high' is reasonable given it is a mandatory obligation with administrative sanctions.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/VI/Pasal/35/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation exists and is correctly identified (BPJS Ketenagakerjaan wajib melaporkan ketidakpatuhan). However, the extraction has several issues: (1) The description is just a verbatim copy of the source text rather than a synthesized characterization of the norm; (2) The subjects list is over-inclusive — 'pemberi_kerja', 'pemerintah', and 'instansi' are not subjects of the obligation but contextual parties; the sole obligated subject is BPJS Ketenagakerjaan; (3) The consequence field is again just the full text verbatim, which is not a consequence — the provision describes an obligation to report, not a consequence/sanction; (4) Severity 'high' is debatable since this is a reporting obligation, not a direct sanction or prohibition.",
+      "errors": [
+        "Subjects over-identified: the obligated subject is only BPJS Ketenagakerjaan, not pemberi_kerja/pemerintah/instansi (those are contextual parties, not duty-bearers of this norm)",
+        "Consequence field incorrectly repeats the entire provision text; the provision itself does not state a consequence for non-compliance with the reporting obligation",
+        "Description is a verbatim copy rather than a meaningful characterization of the norm",
+        "Severity 'high' is questionable for what is essentially a reporting/administrative obligation"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/185/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and quantities accurately reproduce the source text. The severity of 'critical' is reasonable given criminal sanctions of 1-4 years imprisonment and fines up to Rp 400 million. However, the subject is listed as '(none detected)' when the source text uses 'Barang siapa' (whosoever), and more importantly, the referenced articles (e.g., Pasal 42 on foreign worker permits, Pasal 90 on minimum wage) primarily impose obligations on 'pengusaha' (employers). Additionally, the 'Consequence' field merely repeats the entire provision text rather than isolating the sanction, and the obligation markers ('duration_limit, minimum, maximum, maximum') mischaracterize the nature of this provision — it is a penal provision defining sanctions, not an obligation with duration limits.",
+      "errors": [
+        "Subject not detected: 'Barang siapa' (whosoever) is explicitly stated; contextually the obligations referenced are primarily directed at pengusaha/employers",
+        "Obligation markers are inappropriate: 'duration_limit' mischaracterizes criminal sentencing ranges as obligation durations",
+        "Consequence field simply repeats the entire provision text instead of extracting the specific sanction (pidana penjara 1-4 tahun dan/atau denda Rp 100-400 juta)"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/III/Pasal/19/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description accurately mirrors the source text verbatim, the obligation marker 'wajib' is correct, and the severity is reasonable given the administrative sanction. However, the subjects list is problematic: BPJS Ketenagakerjaan is listed as a subject of the obligation, when it is actually the recipient of the payment, not the obligated party. The sole obligated subject is 'Pemberi Kerja selain penyelenggara negara.' Additionally, 'bpjs' is listed separately from 'bpjs_ketenagakerjaan' which is redundant/inaccurate.",
+      "errors": [
+        "BPJS Ketenagakerjaan is incorrectly listed as an obligated subject — it is the recipient, not the duty-bearer",
+        "Redundant 'bpjs' subject tag alongside 'bpjs_ketenagakerjaan'"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/58/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation markers are accurate — the source text clearly prohibits a probation period in fixed-term employment agreements. However, the 'Consequence' field cites content from Ayat 2 of the same Pasal, which is NOT part of the provided source text (Ayat 1 only). While the consequence is factually correct in the broader legal context, it was not present in the source text given. Additionally, the subject should logically be the party drafting the PKWT (typically 'pengusaha'), so marking subjects as 'none detected' is debatable but defensible since the text itself does not explicitly name a subject.",
+      "errors": [
+        "Consequence field includes text from Ayat 2, which is outside the scope of the provided source text (Ayat 1 only)",
+        "Subject could arguably be 'pengusaha' as the party who drafts the PKWT, though the source text does not explicitly state this"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/IX/Pasal/59/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation markers accurately reflect the source text — it is indeed a prohibition on using fixed-term contracts for permanent work. However, the consequence cited (conversion to indefinite-term contract under ayat 7) is not contained in Ayat 2 itself but is drawn from a different ayat of the same Pasal. While contextually related, the extraction attributes content from another provision to this specific ayat. The subjects field showing 'none detected' is also debatable since the implicit subject is the employer (pengusaha) who enters into the contract, though the text itself does not explicitly name one.",
+      "errors": [
+        "Consequence is sourced from Pasal 59 Ayat 7, not from Ayat 2 itself — this is cross-referencing beyond the scope of the specific provision being extracted",
+        "Implicit subject (pengusaha) not identified, though the text is indeed subjectless in its wording"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2004/2/Bab/V/Pasal/122/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and quantities are accurately lifted from the source text. However, the extraction has notable issues: (1) Subjects are listed as 'none detected' when the source says 'Barang siapa' (whoever), which while generic, still indicates a subject — and more importantly, the referenced articles (e.g., Pasal 12(1), Pasal 47, Pasal 90, Pasal 91) in UU 2/2004 about PPHI typically impose obligations on specific parties that could be identified. (2) The description and consequence fields are identical copies of the entire provision text, showing no analytical extraction — the consequence IS the entire pasal, but the description should characterize the underlying obligation (i.e., what must be done to avoid this sanction), not just repeat the penalty clause. (3) The obligation markers labeled as 'duration_limit, minimum, maximum, maximum' conflate the criminal sentence parameters with substantive obligation thresholds — these are sentencing ranges, not operational obligations.",
+      "errors": [
+        "Subject 'Barang siapa' (whoever) exists in text but was not detected; referenced articles impose obligations on identifiable parties",
+        "Description is a verbatim copy of the source rather than a meaningful characterization of the underlying obligation being enforced",
+        "Consequence field is identical to description — no separation between the norm/obligation and its sanction",
+        "Obligation markers mischaracterize sentencing parameters as substantive obligation thresholds"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/34/Bab/II/Pasal/6/Ayat/2",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text as its description. The subject (pemberi_kerja) is correctly identified — the provision addresses 'Pemberi Kerja TKA'. The obligation marker 'wajib' is present in the source. The severity 'high' is reasonable given the mandatory nature and the referenced administrative sanction (denda) in Pasal 36 ayat (1) huruf a, which explicitly cross-references Pasal 6 ayat (2). No quantities are present in the source, matching the extraction.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/9/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation marker are accurately lifted from the source text. The subject 'pemberi_kerja' is correct as the duty-bearer, and 'pekerja' and 'bpjs_ketenagakerjaan' are correctly identified as related parties. However, listing 'bpjs' as a separate subject is redundant/inaccurate since only 'BPJS Ketenagakerjaan' appears in the text. More importantly, the severity is assessed as 'high' but the consequence is only administrative sanctions (sanksi administratif), which typically warrants a 'medium' severity rather than 'high'. The consequence itself is correctly cross-referenced from Pasal 17 of the same PP, so that linkage is acceptable.",
+      "errors": [
+        "Severity 'high' is arguably overstated for an obligation whose sole consequence is administrative sanctions (not criminal)",
+        "Subject 'bpjs' is redundant with 'bpjs_ketenagakerjaan' and does not appear independently in the source text"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XVI/Pasal/184/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description accurately reproduces the source text verbatim, the quantities are correctly extracted, and the severity of 'critical' is reasonable for a criminal sanction with imprisonment up to 5 years. However, the subjects field shows '(none detected)' when the provision uses 'Barang siapa' (whoever), and in context Pasal 167(5) pertains to obligations of the pengusaha (employer). Additionally, the obligation markers are somewhat misleading — these are not 'duration_limit' or 'minimum/maximum' obligations but rather criminal sentencing ranges. The consequence field simply repeats the entire norm text rather than being properly structured.",
+      "errors": [
+        "Subjects not detected — 'Barang siapa' applies and in context of Pasal 167(5) the subject is the pengusaha (employer)",
+        "Obligation markers mischaracterize criminal sentencing ranges as 'duration_limit' and generic 'minimum/maximum' — these are penalty bounds, not regulatory obligations",
+        "Consequence field merely repeats the full text instead of being a distinct extraction of the sanction"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/II/Pasal/11/Ayat/4",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text verbatim as the description. The subject (BPJS Ketenagakerjaan) is correctly identified, the quantity (1 hari kerja) is correct, and the obligation marker (wajib) is present in the source. The severity of 'high' is reasonable given it is a mandatory obligation with a strict time limit imposed on a public body.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/34/Bab/III/Pasal/15/Ayat/4",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text as its description. The subject is the Menteri (or appointed official), the quantity of 2 working days is correctly captured, and the obligation markers correctly identify this as a maximum duration limit for verification. Severity of medium is reasonable for an administrative timeline obligation without explicit sanctions.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2004/2/Bab/III/Pasal/64",
+      "verdict": "partially_correct",
+      "reasoning": "The core obligation (requirements for appointment as Ad-Hoc Judge) exists in the source text, and the quantities (30 tahun minimum age, 5 tahun experience) are correctly extracted. However, the description is truncated mid-sentence (cuts off after 'a.'), failing to capture the full norm. The subject 'hakim' is imprecise — the source specifies candidates for appointment ('untuk dapat diangkat menjadi Hakim Ad-Hoc'), not existing judges. The obligation marker 'minimum' does not appear verbatim in the text (the text uses 'paling rendah' and 'minimal'). Severity 'high' is debatable for an appointment qualification provision rather than a prohibition with sanctions.",
+      "errors": [
+        "Description is truncated and does not represent the full provision",
+        "Subject should be 'calon Hakim Ad-Hoc' (candidates for appointment), not 'hakim'",
+        "Obligation marker 'minimum' is not a verbatim quote from the source — source uses 'paling rendah' and 'minimal'",
+        "Severity 'high' is questionable for an eligibility/qualification requirement with no stated sanction"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/II/Pasal/12/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation is correctly identified (BPJS Ketenagakerjaan wajib menyerahkan Kartu Peserta within 3 hari kerja), and the quantity and obligation marker are correct. However, the subjects list is problematic: the obligated party is BPJS Ketenagakerjaan (correctly included), but listing 'peserta' and 'bpjs' as separate subjects is misleading — 'peserta' is the recipient, not an obligated subject, and 'bpjs' is redundant/imprecise. Additionally, the severity of 'high' is questionable for an administrative delivery deadline with no linked consequence/sanction.",
+      "errors": [
+        "Subject 'peserta' is the recipient of the card, not an obligated party — should not be listed as a subject bearing the obligation",
+        "Subject 'bpjs' is redundant and imprecise given 'bpjs_ketenagakerjaan' is already listed",
+        "Severity 'high' is not well-justified for an administrative timeline obligation with no linked consequence"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/34/Bab/III/Pasal/21/Ayat/5",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text as the description. The subject is correctly identified as the Menteri (or designated official). The quantity of 2 (dua) hari kerja is correctly captured, and the obligation markers of duration_limit/maximum correctly reflect 'paling lama 2 hari kerja'. Severity of medium is reasonable for an administrative processing deadline.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/IV/Pasal/27/Ayat/3",
+      "verdict": "partially_correct",
+      "reasoning": "The description accurately reproduces the source text and the quantity extraction is correct. However, the subject is misidentified. 'Bank pemerintah' in the source text refers to state-owned banks as a benchmark reference, not as the obligated party. The obligated subject is whoever manages the development of the funds (likely the penyelenggara/pengelola program referenced in earlier ayats), not 'pemerintah'. The obligation marker 'minimum' correctly reflects 'paling sedikit'.",
+      "errors": [
+        "Subject misidentified: 'pemerintah' is not the obligated party — 'bank pemerintah' is merely the benchmark reference for the minimum return rate. The actual obligated subject (the fund manager/penyelenggara) is not captured."
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/36/Bab/VIII/Pasal/54/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description accurately reproduces the source text and correctly identifies 'harus' as the obligation marker. However, the subject should be identifiable as 'Pengusaha' (the employer) since wage payment obligations under PP 36/2021 are directed at employers. Additionally, the severity of 'high' is debatable — while currency requirements are mandatory, violations typically result in administrative sanctions rather than criminal penalties, which might warrant a 'medium' classification depending on the framework used.",
+      "errors": [
+        "Subject not detected — the obligation to pay wages in rupiah is directed at the employer (Pengusaha)",
+        "Severity 'high' is arguable; currency payment violations under this PP are subject to administrative sanctions, not criminal penalties"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/36/Bab/V/Pasal/34/Ayat/6",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation exists and is correctly identified via the marker 'harus'. However, the subject is incomplete — the source text says 'bupati/wali kota' as the obligated party, but the extraction lists 'gubernur, bupati' as if both are subjects of the obligation. The gubernur is the recipient of the recommendation, not the one bearing the obligation. Additionally, 'wali kota' is omitted from the subjects list. The severity of 'high' is debatable since this is a procedural recommendation obligation, not a sanction-bearing prohibition.",
+      "errors": [
+        "Subject misidentified: gubernur is the recipient, not the obligated party; the obligated subject is 'bupati/wali kota'",
+        "Wali kota is missing from subjects",
+        "Severity 'high' is questionable for a procedural recommendation obligation with no linked consequence"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/164/Ayat/2",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reproduces the source text as its description. The subject 'perusahaan' is correct (it is the company that must prove its losses). The quantity '2 tahun' is correctly extracted. The obligation marker 'harus' is properly identified. Severity 'high' is reasonable given this is a mandatory evidentiary requirement for justifying mass termination of employment.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XI/Pasal/140/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The extracted norm isolates only one sub-element (point c) of the notification requirements rather than capturing the full obligation of Pasal 140 ayat (2), which specifies minimum content requirements for strike notifications. The word 'harus' in the phrase 'mengapa harus melakukan mogok kerja' is part of the descriptive content of what must be stated in the notification (the reasons why a strike must be conducted), not an independent obligation marker. The severity 'high' is debatable since this is a procedural/administrative content requirement, not a substantive prohibition. The subjects should more accurately include the parties responsible for giving notification (serikat pekerja/serikat buruh or pekerja collectively), though identifying pekerja and serikat_pekerja is not entirely wrong.",
+      "errors": [
+        "Norm extracts only one sub-item (point c) rather than the full obligation about minimum notification content",
+        "The word 'harus' is misidentified as an obligation marker — it is part of the content description ('alasan mengapa harus melakukan mogok kerja'), not a command directed at the subject",
+        "Severity 'high' is not justified for a procedural content requirement with no stated consequence in this provision",
+        "The description is a verbatim fragment, not a characterization of the actual legal norm (which is: strike notifications must contain at minimum these four elements)"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/35/Bab/V/Pasal/39/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation, subject (pekerja), quantity (7 hari kerja), and obligation markers are all correctly identified from the source text. However, the severity assessment of 'high' is questionable — this is a procedural obligation (submitting a rejection letter within a deadline) with no criminal sanction or explicit penalty linked in the source text. A 'medium' or 'low' severity would be more appropriate for a procedural timeline requirement. Additionally, the quantity extraction loses the unit qualifier 'kerja' (hari kerja, not just hari).",
+      "errors": [
+        "Severity 'high' is not justified for a procedural deadline obligation with no linked sanction",
+        "Quantity extracted as ('7', 'tujuh', 'hari') omits the qualifier 'kerja' — should be 'hari kerja' (working days, not calendar days)"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/37/Bab/III/Pasal/11/Ayat/6",
+      "verdict": "partially_correct",
+      "reasoning": "The description is a verbatim copy of the source text, so the content is accurate. However, the subjects are questionable — the provision defines a calculation basis (upah terakhir yang dilaporkan oleh Pengusaha kepada BPJS Ketenagakerjaan), not an active obligation on pekerja or BPJS. The primary subject bearing any implicit obligation is Pengusaha (to report wages correctly). Listing 'pekerja' and 'bpjs' as subjects of this norm is misleading since they are referenced contextually but are not norm-bearers here. Additionally, the severity of 'medium' is debatable for what is essentially a definitional/computational provision rather than a direct prohibition or mandate with sanctions.",
+      "errors": [
+        "Subjects 'pekerja' and 'bpjs' are not obligation-bearers in this provision — they are referenced entities, not norm subjects",
+        "This is primarily a definitional provision specifying calculation basis, not an active obligation; severity 'medium' is arguably too high",
+        "Description is just a verbatim copy rather than a meaningful characterization of the norm"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/V/Pasal/25/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation marker are accurate. However, the subject is misidentified. The subject bearing the obligation is the party conducting the overseas apprenticeship (typically pengusaha/penyelenggara pemagangan), not 'menteri'. The Menteri is the authority who grants the permit, not the one obligated to obtain it.",
+      "errors": [
+        "Subject misidentified: the obligated party is the penyelenggara pemagangan (employer/organizer), not 'menteri'. Menteri is the permit-granting authority."
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/36/Bab/V/Pasal/29/Ayat/4",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation marker 'tidak_boleh' is correctly identified, and the description accurately reproduces the source text. However, the severity assessment of 'high' is questionable — this is a general compliance/consistency clause (implementation must not contradict wage policy in Pasal 4), not a specific prohibition with direct sanctions. It functions more as a harmonization provision. Additionally, while subjects are not explicitly named in this ayat, the implicit subjects are those implementing ayat (1) and (2), which contextually would be pengusaha or pihak yang menetapkan upah — marking 'none detected' is defensible but incomplete.",
+      "errors": [
+        "Severity 'high' is arguably overstated for a general consistency/harmonization clause without directly attached sanctions",
+        "Subject detection could note implicit subjects from referenced ayat (1) and (2)"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2004/2/Bab/IV/Pasal/96/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description is a verbatim copy of the source text, so the obligation content is accurate. The obligation marker 'harus' is correctly identified. However, the subjects list is slightly imprecise: the primary obligated subject here is 'Hakim Ketua Sidang' (not generic 'hakim'), and 'pekerja/buruh' is the beneficiary rather than a duty-bearer. The severity 'high' is reasonable given it concerns a mandatory judicial order for wage payment. The lack of linked consequence is acceptable since the provision itself does not specify a sanction for non-compliance by the judge.",
+      "errors": [
+        "Subject 'hakim' should be more precisely 'Hakim Ketua Sidang' as stated in the source text",
+        "The role distinction is blurred — pengusaha is the party against whom the order is directed, pekerja/buruh is the beneficiary, and Hakim Ketua Sidang is the obligated actor; listing them flatly as co-equal 'subjects' is misleading"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/X/Pasal/74/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation marker ('dilarang') are accurately extracted from the source text. The severity assessment of 'high' is reasonable given the absolute prohibition on worst forms of child labor. However, the subject detection is incorrect — the source text explicitly states 'Siapapun' (anyone/whoever) as the subject of the prohibition, which should have been captured rather than marked as 'none detected'.",
+      "errors": [
+        "Subject 'Siapapun' (anyone) is present in the source text but was not detected by the extraction system."
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/III/Pasal/17/Ayat/1",
+      "verdict": "correct",
+      "reasoning": "The description accurately reproduces the source text verbatim. The quantity (2 tahun) is correctly extracted, and the obligation marker 'maximum' correctly reflects 'paling lama'. The subject is indeed not explicitly stated in this ayat (it refers to the evaluation of risk groupings without naming a specific actor), so '(none detected)' is acceptable. Severity of 'medium' is reasonable for a periodic evaluation obligation.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2021/37/Bab/IV/Pasal/39/Ayat/5",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description and quantity (3 bulan) are accurately extracted from the source text. However, the subjects list includes 'peserta' and 'bpjs' which are unnecessary expansions — 'peserta' is only referenced indirectly (hak Peserta) and is not a subject of the obligation, and 'bpjs' is redundant with 'bpjs_ketenagakerjaan'. The actual subject bearing the obligation is only 'pengusaha', with BPJS Ketenagakerjaan as the recipient entity.",
+      "errors": [
+        "'peserta' is not a subject of this obligation — they are merely referenced as the party whose rights were paid",
+        "'bpjs' is redundant with 'bpjs_ketenagakerjaan' and inflates the subject list"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/III/Pasal/16/Ayat/3",
+      "verdict": "correct",
+      "reasoning": "The extracted norm accurately reflects the source text. The obligation ('wajib dibayar') exists, the subject is correctly identified as 'pemberi_kerja' (Pemberi Kerja selain penyelenggara negara), and no specific quantities are stated in this ayat. The severity of 'high' is reasonable given it is a mandatory social security contribution obligation.",
+      "errors": [],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2004/2/Bab/II/Pasal/36/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The description and obligation marker ('harus') are accurately extracted from the source text. However, the subject is misidentified as 'arbiter' — the obligation to appoint a replacement arbitrator falls on 'para pihak' (the parties), not on the arbiter. Additionally, the severity of 'high' is debatable since there is no sanction or consequence specified in this provision; it is a procedural obligation.",
+      "errors": [
+        "Subject should be 'para pihak' (the disputing parties), not 'arbiter'",
+        "Severity 'high' is questionable given no explicit consequence or sanction is linked to non-compliance in this provision"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XIV/Pasal/181",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation marker 'wajib' is correctly identified and the source text does contain this obligation for pegawai pengawas ketenagakerjaan. However, the extraction is incomplete — the description is truncated after 'a.' and fails to capture the actual content of the obligations (merahasiakan segala sesuatu yang menurut sifatnya patut dirahasiakan; tidak menyalahgunakan kewenangannya). Additionally, the subject 'pegawai pengawas ketenagakerjaan' clearly exists in the text but was not detected. The severity of 'high' is debatable since no criminal/administrative sanctions are directly linked in this provision.",
+      "errors": [
+        "Description is truncated — missing the substantive content of obligations (points a and b)",
+        "Subject 'pegawai pengawas ketenagakerjaan' was not detected despite being explicitly stated",
+        "Severity 'high' is not directly supported since no sanctions or consequences are linked in this provision"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/46/Bab/II/Pasal/9/Ayat/1",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation description and obligation marker ('wajib') are correctly extracted verbatim from the source text. However, the subjects are inaccurate: the obligation is imposed solely on 'peserta' (the participant who changes workplace). 'Pemberi Kerja' is merely the recipient of the notification, not a subject bearing the obligation, and 'BPJS' is not a subject at all — it is only referenced as part of the membership card name. Additionally, severity 'high' is questionable for an administrative notification duty with no linked consequence or sanction in this provision.",
+      "errors": [
+        "Subjects incorrectly include 'pemberi_kerja' and 'bpjs'; the sole obligated subject is 'peserta'",
+        "Severity 'high' is not supported — this is an administrative notification obligation with no stated sanction"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "UU/2003/13/Bab/XII/Pasal/171",
+      "verdict": "partially_correct",
+      "reasoning": "The core content is correct — Pasal 171 grants workers the right to file a lawsuit within 1 year. However, the extraction has issues: (1) The description is simply a truncated copy-paste of the source text, not a characterization of the norm. (2) 'tidak_dapat' is flagged as an obligation marker, but in the source text 'tidak dapat menerima' means the worker 'cannot accept' the termination (a condition/prerequisite), not a prohibition. (3) The subject 'lembaga_penyelesaian' is not a subject bearing an obligation here — it is the forum where the lawsuit is filed. The actual norm is a RIGHT of the worker, not an obligation, making the framing somewhat misleading. (4) Severity 'medium' is debatable for what is essentially a procedural right with a time limitation.",
+      "errors": [
+        "Description is a truncated copy of source text rather than a proper characterization of the norm",
+        "'tidak_dapat' is misidentified as an obligation marker — in context it is a condition (worker cannot accept the PHK), not a prohibition",
+        "'lembaga_penyelesaian' is incorrectly listed as a subject — it bears no obligation here, it is merely the forum",
+        "The norm is fundamentally a RIGHT (hak) of the worker to file a lawsuit, not an obligation — this framing is misleading"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/45/Bab/II/Pasal/5/Ayat/3",
+      "verdict": "partially_correct",
+      "reasoning": "The obligation in this provision is on BPJS Ketenagakerjaan to perform verification within 7 working days, not on the Pemberi Kerja. The subject list includes 'pemberi_kerja' as if they bear an obligation, but they are merely the object of verification. Additionally, the quantity is '7 hari kerja' (working days), but the extracted quantity only notes 'hari' without specifying 'kerja', which is a meaningful distinction.",
+      "errors": [
+        "Subject 'pemberi_kerja' is misidentified as bearing an obligation — they are the object of verification, not the obligated party",
+        "Quantity should specify 'hari kerja' (working days), not just 'hari'"
+      ],
+      "judge_confidence": "high",
+      "batch_id": 0
+    },
+    {
+      "node_id": "PP/2015/44/Bab/V/Pasal/48/Ayat/2",
+      "verdict": "partially_correct",
+      "reasoning": "The description accurately reproduces the source text verbatim, and the quantity (3 tahun) is correctly extracted. However, classifying this as an 'obligation' with markers 'duration_limit, maximum' is debatable — the provision establishes a eligibility condition (syarat) for receiving JKK benefits, not an obligation imposed on a subject. The absence of detected subjects is understandable since the provision doesn't explicitly name pengusaha or pekerja as the duty-bearer, but implicitly BPJS Ketenagakerjaan is the entity that must provide the benefit. The severity 'medium' is reasonable for a benefit eligibility rule.",
+      "errors": [
+        "The norm is characterized as an obligation with 'duration_limit, maximum' markers, but it is more accurately a condition/eligibility requirement for JKK benefits rather than an obligation or prohibition imposed on a specific actor",
+        "No subject detected — while not explicitly named, the implicit subject granting the benefit is BPJS Ketenagakerjaan"
+      ],
+      "judge_confidence": "medium",
+      "batch_id": 0
+    }
+  ]
+}

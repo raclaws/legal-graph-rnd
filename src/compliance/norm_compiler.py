@@ -20,7 +20,7 @@ OBLIGATION_MARKERS = [
     (r'\bharus\b', 'harus', 0.9),
     (r'\bdilarang\b', 'dilarang', 1.0),
     (r'\btidak boleh\b', 'tidak_boleh', 0.9),
-    (r'\btidak dapat\b', 'tidak_dapat', 0.8),
+    (r'\btidak dapat\b(?!\s+(?:diperpanjang|diterima|diajukan|dilakukan kembali))', 'tidak_dapat', 0.8),
     (r'\btidak dapat mensyaratkan\b', 'prohibition', 1.0),
     (r'\btidak dapat memuat\b', 'prohibition', 0.9),
     (r'\btidak dapat diadakan\b', 'prohibition', 0.9),
@@ -69,20 +69,75 @@ CONSEQUENCE_MARKERS = [
 ]
 
 SUBJECT_MARKERS = [
-    (r'\bpengusaha\b', 'employer'),
-    (r'\bperusahaan\b', 'company'),
-    (r'\bpekerja\b', 'worker'),
-    (r'\bburuh\b', 'worker'),
-    (r'\bpemberi kerja\b', 'employer'),
-    (r'\bpemerintah\b', 'government'),
-    (r'\bmenteri\b', 'minister'),
-    (r'\bgubernur\b', 'governor'),
+    # Employers / duty-bearers
+    (r'\bpengusaha\b', 'pengusaha'),
+    (r'\bpemberi kerja\b', 'pemberi_kerja'),
+    (r'\bperusahaan penyedia jasa\b', 'perusahaan_penyedia_jasa'),
+    (r'\bperusahaan pemborong\b', 'perusahaan_pemborong'),
+    (r'\bperusahaan\b', 'perusahaan'),
+    # Workers / beneficiaries (tagged separately for role detection)
+    (r'\bpekerja/buruh\b', 'pekerja'),
+    (r'\bpekerja\b', 'pekerja'),
+    (r'\bburuh\b', 'pekerja'),
+    (r'\bpeserta\b', 'peserta'),
+    # Institutions
+    (r'\bbpjs ketenagakerjaan\b', 'bpjs_ketenagakerjaan'),
+    (r'\bbpjs kesehatan\b', 'bpjs_kesehatan'),
+    (r'\bbpjs\b', 'bpjs'),
+    # Dispute resolution actors
+    (r'\bmediator\b', 'mediator'),
+    (r'\bkonsiliator\b', 'konsiliator'),
+    (r'\barbiter\b', 'arbiter'),
+    (r'\bpanitera muda\b', 'panitera_muda'),
+    (r'\bpanitera\b', 'panitera'),
+    (r'\bhakim\b', 'hakim'),
+    # Government / authorities
+    (r'\bmenteri\b', 'menteri'),
+    (r'\bgubernur\b', 'gubernur'),
+    (r'\bbupati/walikota\b', 'bupati_walikota'),
+    (r'\bbupati\b', 'bupati'),
+    (r'\bwalikota\b', 'walikota'),
+    (r'\bpemerintah daerah\b', 'pemerintah_daerah'),
+    (r'\bpemerintah\b', 'pemerintah'),
+    (r'\binstansi\b', 'instansi'),
+    (r'\bdinas\b', 'dinas'),
+    # Organizational bodies
+    (r'\bserikat pekerja\b', 'serikat_pekerja'),
+    (r'\bserikat buruh\b', 'serikat_pekerja'),
+    (r'\bdewan pengupahan\b', 'dewan_pengupahan'),
+    (r'\blembaga penyelesaian\b', 'lembaga_penyelesaian'),
 ]
+
+
+# Obligation-bearer heuristic: who does the "wajib/harus/dilarang" apply to?
+# If the obligation marker's surrounding text names a subject BEFORE the marker,
+# that subject is the duty-bearer. Others are beneficiaries/objects.
+DUTY_BEARER_PATTERN = re.compile(
+    r'(\b(?:pengusaha|pemberi kerja|perusahaan|bpjs|mediator|arbiter|panitera|'
+    r'konsiliator|menteri|gubernur|pemerintah|dewan pengupahan|serikat pekerja)\b)'
+    r'.{0,40}'
+    r'(?:wajib|harus|dilarang|berkewajiban|tidak boleh|tidak dapat)',
+    re.IGNORECASE,
+)
 
 QUANTITY_PATTERN = re.compile(
     r'(\d+)\s*\(([^)]+)\)\s*(tahun|bulan|hari|jam|persen|%|hari kerja)',
     re.IGNORECASE,
 )
+
+QUANTITY_PATTERNS_EXTRA = [
+    # "2% per bulan", "1,5% per bulan"
+    re.compile(r'(\d+[,.]?\d*)\s*(%|persen)\s*(?:per\s*)?(bulan|tahun|hari)?', re.IGNORECASE),
+    # "Rp 10.000.000" / "Rp10.000.000,00"
+    re.compile(r'Rp\.?\s*([\d.,]+)', re.IGNORECASE),
+    # "30 (tiga puluh) hari" already covered by main pattern
+    # "paling lama 5 tahun" / "paling sedikit 1 bulan"
+    re.compile(r'paling\s+(?:lama|sedikit|banyak|lambat|tinggi|rendah)\s+(\d+)\s*(?:\([^)]*\)\s*)?(tahun|bulan|hari|jam|minggu|hari kerja|kali)', re.IGNORECASE),
+    # "selama 2 (dua) minggu" / "dalam waktu 7 hari"
+    re.compile(r'(?:selama|dalam\s+waktu|dalam\s+jangka\s+waktu)\s+(\d+)\s*(?:\([^)]*\)\s*)?(tahun|bulan|hari|minggu|hari kerja)', re.IGNORECASE),
+    # "1 (satu) kali upah" / "2 kali PMSK"
+    re.compile(r'(\d+)\s*(?:\([^)]*\)\s*)?(kali)\s+\w+', re.IGNORECASE),
+]
 
 DEFINITION_MARKERS = [
     r'^dalam\s+(peraturan|undang-undang)',
@@ -153,9 +208,52 @@ def extract_signals(text: str) -> Signal:
             if subject not in signals.subjects:
                 signals.subjects.append(subject)
 
+    # Duty-bearer detection: who is BEFORE the obligation marker = obligated party
+    duty_match = DUTY_BEARER_PATTERN.search(text)
+    if duty_match:
+        bearer = duty_match.group(1).lower().strip()
+        # Map to our subject labels
+        bearer_map = {
+            'pengusaha': 'pengusaha', 'pemberi kerja': 'pemberi_kerja',
+            'perusahaan': 'perusahaan', 'bpjs': 'bpjs',
+            'mediator': 'mediator', 'arbiter': 'arbiter',
+            'panitera': 'panitera', 'konsiliator': 'konsiliator',
+            'menteri': 'menteri', 'gubernur': 'gubernur',
+            'pemerintah': 'pemerintah', 'dewan pengupahan': 'dewan_pengupahan',
+            'serikat pekerja': 'serikat_pekerja',
+        }
+        for key, label in bearer_map.items():
+            if key in bearer:
+                if label not in signals.subjects:
+                    signals.subjects.insert(0, label)
+                elif signals.subjects[0] != label:
+                    signals.subjects.remove(label)
+                    signals.subjects.insert(0, label)
+                break
+
     # Quantities
+    raw_quantities = []
+    seen_spans = set()
     for match in QUANTITY_PATTERN.finditer(text):
-        signals.quantities.append((match.group(1), match.group(2), match.group(3)))
+        raw_quantities.append((match.group(1), match.group(2), match.group(3)))
+        seen_spans.add((match.start(), match.end()))
+    # Extra quantity patterns (percentages, Rp amounts, durations)
+    for pat in QUANTITY_PATTERNS_EXTRA:
+        for match in pat.finditer(text):
+            if any(not (match.end() <= start or match.start() >= end) for start, end in seen_spans):
+                continue
+            groups = tuple(g for g in match.groups() if g)
+            raw_quantities.append(groups)
+            seen_spans.add((match.start(), match.end()))
+    # Deduplicate: keep first occurrence per numeric value
+    seen_nums = set()
+    for q in raw_quantities:
+        num_key = q[0] if q else ""
+        if num_key and num_key not in seen_nums:
+            signals.quantities.append(q)
+            seen_nums.add(num_key)
+        elif not num_key:
+            signals.quantities.append(q)
 
     # Definition check
     for pattern in DEFINITION_MARKERS:
@@ -231,24 +329,35 @@ class CandidateNorm:
 
 def extract_obligation_text(text: str) -> str:
     """Extract the core obligation statement from provision text."""
-    # Take first sentence that contains an obligation marker
-    sentences = re.split(r'[.;]\s*', text)
+    sentences = re.split(r'(?<=[.;])\s+', text)
     for sent in sentences:
         sent_lower = sent.lower()
         for pattern, _, _ in OBLIGATION_MARKERS:
             if re.search(pattern, sent_lower):
-                return sent.strip()[:200]
-    return text[:200]
+                cleaned = sent.strip()
+                if len(cleaned) <= 500:
+                    return cleaned
+                # Truncate at word boundary
+                truncated = cleaned[:500].rsplit(' ', 1)[0]
+                return truncated + "..."
+    # Fallback: first meaningful sentence
+    full = text.strip()
+    if len(full) <= 500:
+        return full
+    return full[:500].rsplit(' ', 1)[0] + "..."
 
 
 def extract_consequence_text(text: str) -> str:
-    """Extract consequence/penalty from provision text."""
-    sentences = re.split(r'[.;]\s*', text)
+    """Extract consequence/penalty from the SAME provision text only."""
+    sentences = re.split(r'(?<=[.;])\s+', text)
     for sent in sentences:
         sent_lower = sent.lower()
         for pattern, _, _ in CONSEQUENCE_MARKERS:
             if re.search(pattern, sent_lower):
-                return sent.strip()[:200]
+                cleaned = sent.strip()
+                if len(cleaned) <= 500:
+                    return cleaned
+                return cleaned[:500].rsplit(' ', 1)[0] + "..."
     return ""
 
 
@@ -330,16 +439,22 @@ def compile_norms(provisions: list[dict], consequence_map: dict[str, str] | None
 def _find_consequence(node_id: str, consequence_map: dict[str, str]) -> str:
     """Find consequence for a provision by checking the map.
 
-    Tries exact match first, then Pasal-level match (without Ayat).
+    Strict matching only — exact node_id or exact Pasal (no Ayat) when the
+    penalty provision explicitly targets the whole Pasal without specifying ayat.
+    Does NOT fall back to Pasal-level when the source references specific ayats.
     """
+    # Exact match (includes ayat-level)
     if node_id in consequence_map:
         return consequence_map[node_id]
 
-    # Try Pasal-level (strip Ayat)
+    # Only match at Pasal-level if the consequence map entry has NO ayat qualifier
+    # (meaning the penalty clause said "Pasal 12" not "Pasal 12 ayat (1)")
     pasal_match = re.match(r'(.+/Pasal/\d+[A-Z]?)', node_id)
     if pasal_match:
         pasal_id = pasal_match.group(1)
         if pasal_id in consequence_map:
+            # Verify this is a whole-Pasal reference, not just a partial match
+            # by checking the map key is exactly the Pasal (no ayat appended)
             return consequence_map[pasal_id]
 
     return ""
@@ -388,29 +503,33 @@ def build_consequence_map(provisions: list[dict]) -> dict[str, str]:
     for p in consequence_provisions:
         text = p.get("text", "")
         node_id = p.get("node_id", "")
-        consequence_text = extract_consequence_text(text) or text[:200]
+        consequence_text = extract_consequence_text(text) or text[:300]
 
         # Find which Pasal this penalty applies to
         refs = RE_PASAL_REF.findall(text)
         if refs:
             # Derive base path from this provision's node_id
-            # e.g. PP/2021/35/Bab/V/Pasal/60 -> base is PP/2021/35
             base_match = re.match(r'([^/]+/\d+/\d+)', node_id)
             base = base_match.group(1) if base_match else ""
 
             for ref in refs:
                 # ref is like "12" or "12 ayat (1)"
-                pasal_num = re.match(r'(\d+[A-Z]?)', ref)
-                if pasal_num and base:
-                    # We don't know which Bab it's in — store with wildcard search later
-                    # For now, just store the pasal number reference
-                    ref_key = f"{base}/*/Pasal/{pasal_num.group(1)}"
+                pasal_num_match = re.match(r'(\d+[A-Z]?)', ref)
+                ayat_match = re.search(r'ayat\s*\((\d+)\)', ref)
+                if pasal_num_match and base:
+                    pasal_num = pasal_num_match.group(1)
+                    if ayat_match:
+                        # Specific ayat referenced — map to ayat level only
+                        ref_key = f"{base}/*/Pasal/{pasal_num}/Ayat/{ayat_match.group(1)}"
+                    else:
+                        # Whole Pasal referenced
+                        ref_key = f"{base}/*/Pasal/{pasal_num}"
                     cmap[ref_key] = consequence_text
 
-        # Also: if this provision itself IS the consequence for the previous Pasal
-        # Pattern: Ayat 2 with "batal demi hukum" following Ayat 1 with obligation
+        # Also: if this provision itself IS the consequence for the same Pasal
+        # Pattern: Ayat N with "batal demi hukum" following Ayat 1 with obligation
         if 'batal demi hukum' in text.lower() or 'demi hukum' in text.lower():
-            # The consequence applies to the same Pasal
+            # The consequence applies to the same Pasal only
             pasal_match = re.match(r'(.+/Pasal/\d+[A-Z]?)', node_id)
             if pasal_match:
                 cmap[pasal_match.group(1)] = consequence_text
