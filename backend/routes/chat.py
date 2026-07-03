@@ -17,11 +17,82 @@ from ..schemas import (
     PerluDikonfirmasiItem,
 )
 from ..services.llm import call_llm_chat, call_llm_simple
-from ..services.graph import validate_citations
+from ..services.graph import validate_citations, search_definitions, search_provisions_by_topic
 
 router = APIRouter()
 
 _sessions: dict[str, list[dict]] = {}
+
+# Patterns that indicate a conceptual/definition question
+import re
+
+_CONCEPTUAL_PATTERNS = [
+    re.compile(r'\b(apa\s+(itu|yang dimaksud|arti|pengertian|definisi))\b', re.IGNORECASE),
+    re.compile(r'\b(what\s+is|define|pengertian|definisi)\b', re.IGNORECASE),
+    re.compile(r'\b(jelaskan|explain)\s+(apa|tentang|mengenai)\b', re.IGNORECASE),
+    re.compile(r'\b(maksud(nya)?|artinya)\s', re.IGNORECASE),
+]
+
+# Known abbreviations to expand for search
+_TERM_EXPANSIONS = {
+    "pkwt": ["perjanjian kerja waktu tertentu", "PKWT"],
+    "pkwtt": ["perjanjian kerja waktu tidak tertentu", "PKWTT"],
+    "phk": ["pemutusan hubungan kerja", "PHK"],
+    "ump": ["upah minimum provinsi", "UMP"],
+    "umk": ["upah minimum kabupaten", "UMK"],
+    "thr": ["tunjangan hari raya", "THR"],
+    "bpjs": ["jaminan sosial", "BPJS"],
+    "jht": ["jaminan hari tua", "JHT"],
+    "jkk": ["jaminan kecelakaan kerja", "JKK"],
+    "jkm": ["jaminan kematian", "JKM"],
+    "jp": ["jaminan pensiun", "JP"],
+    "jkp": ["jaminan kehilangan pekerjaan", "JKP"],
+    "tka": ["tenaga kerja asing", "TKA", "RPTKA"],
+    "alih daya": ["outsourcing", "pemborongan", "alih daya"],
+    "lembur": ["waktu kerja lembur", "overtime"],
+    "cuti": ["waktu istirahat", "cuti"],
+    "pesangon": ["uang pesangon", "severance"],
+}
+
+
+def _detect_conceptual_question(message: str) -> list[str] | None:
+    """Detect if message is asking about a concept. Returns search keywords or None."""
+    msg_lower = message.lower().strip()
+
+    for pattern in _CONCEPTUAL_PATTERNS:
+        if pattern.search(msg_lower):
+            # Extract the term being asked about
+            # Try to get the noun after "apa itu", "what is", etc.
+            term_match = re.search(
+                r'(?:apa\s+(?:itu|yang dimaksud|arti|pengertian)\s+|what\s+is\s+|definisi\s+|jelaskan\s+(?:apa|tentang|mengenai)\s+)([^?.!]+)',
+                msg_lower,
+            )
+            if term_match:
+                term = term_match.group(1).strip().rstrip('?').strip()
+                keywords = [term]
+                if term in _TERM_EXPANSIONS:
+                    keywords.extend(_TERM_EXPANSIONS[term])
+                return keywords
+
+    # Also catch bare abbreviations as questions (e.g. just "PKWT?")
+    bare = msg_lower.rstrip('?').strip()
+    if bare in _TERM_EXPANSIONS:
+        return [bare] + _TERM_EXPANSIONS[bare]
+
+    return None
+
+
+def _build_definition_context(keywords: list[str]) -> str:
+    """Fetch definitions from graph and format as LLM context."""
+    definitions = search_definitions(keywords, limit=6)
+    if not definitions:
+        return ""
+
+    context = "\n\nDEFINISI DARI REGULASI (gunakan sebagai sumber utama jawaban):\n"
+    for d in definitions:
+        text = (d["text"] or "")[:400]
+        context += f"[{d['node_id']}]: {text}\n\n"
+    return context
 
 
 def _extract_text(content: bytes, filename: str) -> str:
@@ -90,7 +161,21 @@ async def chat(req: ChatRequest):
 
     _sessions[session_id].append({"role": "user", "content": message})
 
-    parsed = call_llm_chat(_sessions[session_id])
+    # Detect conceptual questions and inject definition context
+    definition_context = ""
+    conceptual_keywords = _detect_conceptual_question(req.message)
+    if conceptual_keywords:
+        definition_context = _build_definition_context(conceptual_keywords)
+
+    # Build messages with optional definition context injected into the latest user message
+    chat_messages = _sessions[session_id][:]
+    if definition_context and chat_messages:
+        chat_messages[-1] = {
+            "role": "user",
+            "content": chat_messages[-1]["content"] + definition_context,
+        }
+
+    parsed = call_llm_chat(chat_messages)
 
     if not parsed:
         body = ChatResponseBody(
@@ -106,9 +191,21 @@ async def chat(req: ChatRequest):
     if body.hukum:
         cited = [h.legal_basis for h in body.hukum if h.legal_basis]
         valid = validate_citations(cited)
+        # Items with invalid/missing/non-Pasal citations move to analisis
+        valid_hukum = []
+        demoted = []
         for h in body.hukum:
-            if h.legal_basis and not valid.get(h.legal_basis):
-                h.legal_basis = ""
+            if not h.legal_basis or '/Pasal/' not in h.legal_basis:
+                demoted.append(h.description)
+            elif not valid.get(h.legal_basis):
+                demoted.append(h.description)
+            else:
+                valid_hukum.append(h)
+        body.hukum = valid_hukum
+        if demoted and body.analisis:
+            body.analisis.text += "\n\n" + "\n".join(f"• {d}" for d in demoted)
+        elif demoted:
+            body.analisis = AnalisisBlock(text="\n".join(f"• {d}" for d in demoted))
 
     _sessions[session_id].append({"role": "assistant", "content": str(parsed)})
 

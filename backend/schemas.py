@@ -126,3 +126,18 @@ class ProvisionResponse(BaseModel):
     children: list[ProvisionChild] = []
     regulation: dict | None = None
     norms_derived: list[dict] = []
+
+
+# --- Explain ---
+
+class ExplainDefinition(BaseModel):
+    node_id: str
+    text: str
+
+
+class ExplainResponse(BaseModel):
+    term: str
+    definition: str
+    explanation: str | None = None
+    sources: list[ExplainDefinition] = []
+    key_points: list[str] = []

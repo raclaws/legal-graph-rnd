@@ -85,3 +85,16 @@ export interface ProvisionResponse {
   regulation?: Record<string, string>
   norms_derived: { id: string; description: string; severity: string }[]
 }
+
+export interface ExplainDefinition {
+  node_id: string
+  text: string
+}
+
+export interface ExplainResponse {
+  term: string
+  definition: string
+  explanation?: string
+  sources: ExplainDefinition[]
+  key_points: string[]
+}

@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import calculator, chat, compliance, provision
+from .routes import calculator, chat, compliance, explain, provision
 
 
 @asynccontextmanager
@@ -36,6 +36,7 @@ app.include_router(chat.router, prefix="/api")
 app.include_router(calculator.router, prefix="/api")
 app.include_router(provision.router, prefix="/api")
 app.include_router(compliance.router, prefix="/api")
+app.include_router(explain.router, prefix="/api")
 
 
 @app.get("/health")

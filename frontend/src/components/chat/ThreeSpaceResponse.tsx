@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { ChatResponseBody, PerluDikonfirmasiItem } from '../../types'
 
 interface Props {
   response: ChatResponseBody
   onPrefill: (text: string) => void
   onCitationFocus?: (index: number) => void
+  onCitationClick?: (nodeId: string) => void
   hukumOffset?: number
   showUnclear?: boolean
 }
@@ -118,9 +119,33 @@ function formatPasal(nodeId: string): string {
   return nodeId
 }
 
-export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocus, hukumOffset = 0, showUnclear }: Props) {
+interface TextSegment {
+  text: string
+  footnote?: number
+}
+
+function parseFootnoteMarkers(text: string): TextSegment[] {
+  // Split on [1], [2], [3] etc — LLM inserts these as citation markers
+  const parts = text.split(/\[(\d+)\]/)
+  const segments: TextSegment[] = []
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 0) {
+      if (parts[i]) segments.push({ text: parts[i] })
+    } else {
+      segments.push({ text: '', footnote: parseInt(parts[i], 10) })
+    }
+  }
+  return segments
+}
+
+export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocus, onCitationClick, hukumOffset = 0, showUnclear }: Props) {
   const { hukum, analisis, perlu_dikonfirmasi } = response
   const hasBlocking = perlu_dikonfirmasi.length > 0
+
+  const analisisSegments = useMemo(() => {
+    if (!analisis?.text) return []
+    return parseFootnoteMarkers(analisis.text)
+  }, [analisis])
 
   return (
     <div className="space-y-3">
@@ -128,26 +153,51 @@ export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocu
         <PerluSection items={perlu_dikonfirmasi} onSubmit={onPrefill} />
       )}
 
-      {/* Citation links — click to focus in sidebar */}
-      {hukum.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-1">
-          {hukum.map((item, i) => (
-            <button
-              key={i}
-              onClick={() => onCitationFocus?.(hukumOffset + i)}
-              className="inline-flex items-center gap-1 rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] text-blue-700 hover:bg-blue-100 hover:border-blue-400 transition-colors"
-            >
-              <span className="font-medium">{formatPasal(item.legal_basis || 'Ref')}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
       {analisis && !hasBlocking && (
         <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
           <h4 className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-1">Analisis</h4>
           <p className="text-xs text-gray-500 italic mb-2">{analisis.disclaimer}</p>
-          <p className="text-sm text-gray-700 whitespace-pre-line">{analisis.text}</p>
+          <p className="text-sm text-gray-700 whitespace-pre-line">
+            {analisisSegments.map((seg, i) =>
+              seg.footnote ? (
+                <sup
+                  key={i}
+                  onClick={() => {
+                    const idx = seg.footnote! - 1
+                    onCitationFocus?.(hukumOffset + idx)
+                    if (hukum[idx]?.legal_basis) onCitationClick?.(hukum[idx].legal_basis)
+                  }}
+                  className="text-blue-600 cursor-pointer hover:text-blue-800 font-semibold text-[9px] ml-0.5"
+                >
+                  {seg.footnote}
+                </sup>
+              ) : (
+                <span key={i}>{seg.text}</span>
+              )
+            )}
+          </p>
+        </div>
+      )}
+
+      {/* Footnote sources */}
+      {hukum.length > 0 && (
+        <div className="px-1 pt-2">
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Sumber</p>
+          <ol className="list-none flex flex-wrap gap-x-3 gap-y-0.5">
+            {hukum.map((item, i) => (
+              <li key={i}>
+                <button
+                  onClick={() => {
+                    onCitationFocus?.(hukumOffset + i)
+                    if (item.legal_basis) onCitationClick?.(item.legal_basis)
+                  }}
+                  className="text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                >
+                  <sup className="text-[9px]">{i + 1}</sup> {formatPasal(item.legal_basis)}
+                </button>
+              </li>
+            ))}
+          </ol>
         </div>
       )}
 
@@ -162,10 +212,10 @@ export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocu
                   <span className="text-gray-700">{action.description}</span>
                   {action.legal_basis && (
                     <button
-                      onClick={() => onCitationFocus?.(i)}
+                      onClick={() => onCitationClick?.(action.legal_basis)}
                       className="ml-1.5 text-[10px] text-orange-600 hover:underline"
                     >
-                      {action.legal_basis}
+                      {formatPasal(action.legal_basis)}
                     </button>
                   )}
                 </div>

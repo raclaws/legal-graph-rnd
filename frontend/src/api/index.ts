@@ -1,4 +1,4 @@
-import type { ChatResponse, SeveranceRequest, SeveranceResponse, ProvisionResponse } from '../types'
+import type { ChatResponse, SeveranceRequest, SeveranceResponse, ProvisionResponse, ExplainResponse } from '../types'
 
 const BASE = ''
 
@@ -47,5 +47,11 @@ export async function calculateSeverance(req: SeveranceRequest): Promise<Severan
 export async function getProvision(nodeId: string): Promise<ProvisionResponse> {
   const res = await fetch(`${BASE}/api/provision/${nodeId}`)
   if (!res.ok) throw new Error(`Provision not found: ${res.status}`)
+  return res.json()
+}
+
+export async function explainTerm(term: string): Promise<ExplainResponse> {
+  const res = await fetch(`${BASE}/api/explain?term=${encodeURIComponent(term)}`)
+  if (!res.ok) throw new Error(`Explain failed: ${res.status}`)
   return res.json()
 }

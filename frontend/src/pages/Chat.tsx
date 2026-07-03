@@ -112,6 +112,7 @@ export default function Chat() {
                   response={msg.response}
                   onPrefill={handleSend}
                   onCitationFocus={handleCitationFocus}
+                  onCitationClick={setPanelNodeId}
                   hukumOffset={getHukumOffset(i)}
                 />
               ) : (

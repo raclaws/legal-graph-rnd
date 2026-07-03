@@ -106,6 +106,9 @@ def validate_citations(node_ids: list[str]) -> dict[str, bool]:
         pass
 
     return results
+
+
+def get_graph_stats() -> dict:
     try:
         g = LegalGraph()
         with g.driver.session() as session:
@@ -119,3 +122,83 @@ def validate_citations(node_ids: list[str]) -> dict[str, bool]:
         return {"provisions": provisions, "regulations": regulations, "norms": norms}
     except Exception:
         return {"provisions": 0, "regulations": 0, "norms": 0}
+
+
+def search_definitions(keywords: list[str], limit: int = 10) -> list[dict]:
+    """Search definition provisions (Pasal 1 / Ketentuan Umum) by keyword.
+
+    Returns provisions whose text contains any of the keywords,
+    prioritizing actual definition provisions (type contains 'Pasal' with number '1'
+    or text contains 'yang dimaksud dengan').
+    """
+    if not keywords:
+        return []
+
+    try:
+        g = LegalGraph()
+        results = []
+        with g.driver.session() as session:
+            # Build keyword match condition
+            conditions = " OR ".join(
+                f"toLower(p.text) CONTAINS toLower('{kw}')" for kw in keywords
+            )
+            query = f"""
+                MATCH (p:Provision)
+                WHERE p.text IS NOT NULL AND ({conditions})
+                WITH p,
+                     CASE
+                       WHEN p.number = '1' THEN 3
+                       WHEN toLower(p.text) CONTAINS 'yang dimaksud dengan' THEN 2
+                       WHEN toLower(p.text) CONTAINS 'ketentuan umum' THEN 2
+                       ELSE 1
+                     END AS priority
+                ORDER BY priority DESC, size(p.text) ASC
+                LIMIT $limit
+                RETURN p.node_id AS node_id, p.text AS text, p.number AS number, p.type AS type
+            """
+            r = session.run(query, limit=limit)
+            for rec in r:
+                results.append({
+                    "node_id": rec["node_id"],
+                    "text": rec["text"],
+                    "number": rec["number"],
+                    "type": rec["type"],
+                })
+        g.close()
+        return results
+    except Exception:
+        return []
+
+
+def search_provisions_by_topic(keywords: list[str], limit: int = 15) -> list[dict]:
+    """Search all provisions by keyword for topic-relevant context.
+
+    Used to feed relevant Pasal to LLM prompt for better citation accuracy.
+    """
+    if not keywords:
+        return []
+
+    try:
+        g = LegalGraph()
+        results = []
+        with g.driver.session() as session:
+            conditions = " OR ".join(
+                f"toLower(p.text) CONTAINS toLower('{kw}')" for kw in keywords
+            )
+            query = f"""
+                MATCH (p:Provision)
+                WHERE p.text IS NOT NULL AND p.text <> '' AND ({conditions})
+                RETURN p.node_id AS node_id, p.text AS text
+                ORDER BY size(p.text) ASC
+                LIMIT $limit
+            """
+            r = session.run(query, limit=limit)
+            for rec in r:
+                results.append({
+                    "node_id": rec["node_id"],
+                    "text": rec["text"][:300],
+                })
+        g.close()
+        return results
+    except Exception:
+        return []
