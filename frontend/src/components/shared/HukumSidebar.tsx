@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { HukumItem } from '../../types'
 import SeverityBadge from './SeverityBadge'
 
@@ -15,8 +15,8 @@ function getRegKey(nodeId: string): string {
 
 function formatPasalShort(nodeId: string): string {
   const m = nodeId.match(/Pasal\/(\d+\w*)(?:\/Ayat\/(\d+))?/)
-  if (!m) return nodeId
-  return m[2] ? `Ps. ${m[1]} Ayat ${m[2]}` : `Ps. ${m[1]}`
+  if (!m) return ''
+  return m[2] ? `Ps.${m[1]}(${m[2]})` : `Ps.${m[1]}`
 }
 
 interface GroupedReg {
@@ -26,10 +26,19 @@ interface GroupedReg {
 
 export default function HukumSidebar({ items, focusedIndex, onCitationClick }: Props) {
   const refs = useRef<(HTMLLIElement | null)[]>([])
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (focusedIndex !== null && refs.current[focusedIndex]) {
       refs.current[focusedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Auto-expand if collapsed
+      const item = items[focusedIndex]
+      if (item?.legal_basis) {
+        const key = getRegKey(item.legal_basis)
+        if (collapsed.has(key)) {
+          setCollapsed(prev => { const n = new Set(prev); n.delete(key); return n })
+        }
+      }
     }
   }, [focusedIndex])
 
@@ -53,6 +62,15 @@ export default function HukumSidebar({ items, focusedIndex, onCitationClick }: P
     return groups
   }, [items])
 
+  function toggleGroup(key: string) {
+    setCollapsed(prev => {
+      const n = new Set(prev)
+      if (n.has(key)) n.delete(key)
+      else n.add(key)
+      return n
+    })
+  }
+
   if (items.length === 0) return null
 
   return (
@@ -65,37 +83,44 @@ export default function HukumSidebar({ items, focusedIndex, onCitationClick }: P
         {grouped.map((group, gi) => (
           <div key={gi}>
             {group.regKey && (
-              <div className="px-4 pt-3 pb-1">
+              <button
+                onClick={() => toggleGroup(group.regKey)}
+                className="w-full px-4 pt-3 pb-1 flex items-center gap-1.5 hover:bg-gray-50 text-left"
+              >
+                <span className="text-[10px] text-gray-400">{collapsed.has(group.regKey) ? '▶' : '▼'}</span>
                 <span className="text-[10px] font-semibold text-gray-500 uppercase">{group.regKey}</span>
-              </div>
+                <span className="text-[10px] text-gray-400">({group.items.length})</span>
+              </button>
             )}
-            <ul>
-              {group.items.map(({ item, originalIndex }) => (
-                <li
-                  key={originalIndex}
-                  ref={el => { refs.current[originalIndex] = el }}
-                  className={`px-4 py-2 transition-colors ${group.regKey ? 'pl-6' : ''} ${focusedIndex === originalIndex ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
-                >
-                  <div className="flex items-start gap-2">
-                    <SeverityBadge severity={item.severity} />
-                    <p className="text-xs text-gray-700 leading-relaxed">{item.description}</p>
-                  </div>
-                  {item.doc_evidence && (
-                    <p className="mt-1 ml-7 text-[10px] text-gray-500 bg-gray-100 rounded px-2 py-1 italic">
-                      {item.doc_evidence}
-                    </p>
-                  )}
-                  {item.legal_basis && (
-                    <button
-                      onClick={() => onCitationClick?.(item.legal_basis)}
-                      className="mt-1 text-[10px] text-blue-600 hover:underline ml-7"
-                    >
-                      {formatPasalShort(item.legal_basis)}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {!collapsed.has(group.regKey) && (
+              <ul>
+                {group.items.map(({ item, originalIndex }) => (
+                  <li
+                    key={originalIndex}
+                    ref={el => { refs.current[originalIndex] = el }}
+                    className={`px-4 py-2 transition-colors ${group.regKey ? 'pl-6' : ''} ${focusedIndex === originalIndex ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <SeverityBadge severity={item.severity} />
+                      {item.legal_basis && (
+                        <button
+                          onClick={() => onCitationClick?.(item.legal_basis)}
+                          className="text-[10px] text-blue-600 hover:underline shrink-0 mt-0.5"
+                        >
+                          {formatPasalShort(item.legal_basis)}
+                        </button>
+                      )}
+                      <p className="text-xs text-gray-700 leading-relaxed">{item.description}</p>
+                    </div>
+                    {item.doc_evidence && (
+                      <p className="mt-1 ml-7 text-[10px] text-gray-500 bg-gray-100 rounded px-2 py-1 italic">
+                        {item.doc_evidence}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </div>
