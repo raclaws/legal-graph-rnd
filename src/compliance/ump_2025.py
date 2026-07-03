@@ -1,0 +1,46 @@
+"""UMP (Upah Minimum Provinsi) 2025 data.
+
+Source: Keputusan Gubernur masing-masing provinsi, announced Nov-Dec 2024.
+These values are publicly available and widely reported.
+"""
+
+UMP_2025 = [
+    {"province": "Aceh", "amount": 3413666},
+    {"province": "Sumatera Utara", "amount": 2992600},
+    {"province": "Sumatera Barat", "amount": 2920432},
+    {"province": "Riau", "amount": 3294625},
+    {"province": "Jambi", "amount": 3062725},
+    {"province": "Sumatera Selatan", "amount": 3456874},
+    {"province": "Bengkulu", "amount": 2507079},
+    {"province": "Lampung", "amount": 2816000},
+    {"province": "Kepulauan Bangka Belitung", "amount": 3640000},
+    {"province": "Kepulauan Riau", "amount": 3526786},
+    {"province": "DKI Jakarta", "amount": 5396000},
+    {"province": "Jawa Barat", "amount": 2191532},
+    {"province": "Jawa Tengah", "amount": 2169725},
+    {"province": "DI Yogyakarta", "amount": 2215000},
+    {"province": "Jawa Timur", "amount": 2240000},
+    {"province": "Banten", "amount": 2996800},
+    {"province": "Bali", "amount": 3056000},
+    {"province": "Nusa Tenggara Barat", "amount": 2607000},
+    {"province": "Nusa Tenggara Timur", "amount": 2425000},
+    {"province": "Kalimantan Barat", "amount": 2878000},
+    {"province": "Kalimantan Tengah", "amount": 3301702},
+    {"province": "Kalimantan Selatan", "amount": 3378513},
+    {"province": "Kalimantan Timur", "amount": 3487537},
+    {"province": "Kalimantan Utara", "amount": 3541000},
+    {"province": "Sulawesi Utara", "amount": 3635500},
+    {"province": "Sulawesi Tengah", "amount": 2859485},
+    {"province": "Sulawesi Selatan", "amount": 3520049},
+    {"province": "Sulawesi Tenggara", "amount": 2990000},
+    {"province": "Gorontalo", "amount": 2989350},
+    {"province": "Sulawesi Barat", "amount": 2871794},
+    {"province": "Maluku", "amount": 2959798},
+    {"province": "Maluku Utara", "amount": 3070000},
+    {"province": "Papua", "amount": 3864000},
+    {"province": "Papua Barat", "amount": 3360000},
+    {"province": "Papua Selatan", "amount": 3521000},
+    {"province": "Papua Tengah", "amount": 3400000},
+    {"province": "Papua Pegunungan", "amount": 3300000},
+    {"province": "Papua Barat Daya", "amount": 3450000},
+]
