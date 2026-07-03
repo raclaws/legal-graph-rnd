@@ -11,3 +11,7 @@ venv/
 .settings.json
 corpus/raw/
 corpus/parsed/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
