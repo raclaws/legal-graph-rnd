@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import type { HukumItem } from '../../types'
-import SeverityBadge from './SeverityBadge'
 
 interface Props {
   items: HukumItem[]
@@ -17,6 +16,15 @@ function formatPasalShort(nodeId: string): string {
   const m = nodeId.match(/Pasal\/(\d+\w*)(?:\/Ayat\/(\d+))?/)
   if (!m) return ''
   return m[2] ? `Ps.${m[1]}(${m[2]})` : `Ps.${m[1]}`
+}
+
+function severityPillClass(severity: string): string {
+  switch (severity) {
+    case 'critical': return 'bg-red-100 text-red-800'
+    case 'high': return 'bg-orange-100 text-orange-800'
+    case 'medium': return 'bg-yellow-100 text-yellow-800'
+    default: return 'bg-blue-100 text-blue-700'
+  }
 }
 
 interface GroupedReg {
@@ -101,14 +109,17 @@ export default function HukumSidebar({ items, focusedIndex, onCitationClick }: P
                     className={`px-4 py-2 transition-colors ${group.regKey ? 'pl-6' : ''} ${focusedIndex === originalIndex ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
                   >
                     <div className="flex items-start gap-2">
-                      <SeverityBadge severity={item.severity} />
-                      {item.legal_basis && (
+                      {item.legal_basis ? (
                         <button
                           onClick={() => onCitationClick?.(item.legal_basis)}
-                          className="text-[10px] text-blue-600 hover:underline shrink-0 mt-0.5"
+                          className={`shrink-0 mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium hover:opacity-80 transition-opacity ${severityPillClass(item.severity)}`}
                         >
                           {formatPasalShort(item.legal_basis)}
                         </button>
+                      ) : (
+                        <span className={`shrink-0 mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${severityPillClass(item.severity)}`}>
+                          {item.severity}
+                        </span>
                       )}
                       <p className="text-xs text-gray-700 leading-relaxed">{item.description}</p>
                     </div>
