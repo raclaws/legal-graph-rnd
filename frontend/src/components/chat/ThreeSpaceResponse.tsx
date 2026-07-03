@@ -9,85 +9,105 @@ interface Props {
   showUnclear?: boolean
 }
 
-function PerluItem({ q, onAnswer }: { q: PerluDikonfirmasiItem; onAnswer: (answer: string) => void }) {
-  const [expanded, setExpanded] = useState(false)
-  const [value, setValue] = useState('')
+function PerluSection({ items, onSubmit }: { items: PerluDikonfirmasiItem[]; onSubmit: (answers: string) => void }) {
+  const [values, setValues] = useState<Record<string, string>>({})
+  const [submitted, setSubmitted] = useState(false)
+
+  function setValue(key: string, val: string) {
+    setValues(prev => ({ ...prev, [key]: val }))
+  }
 
   function handleSubmit() {
-    if (!value.trim()) return
-    onAnswer(`${q.question}: ${value.trim()}`)
-    setValue('')
-    setExpanded(false)
+    const parts = items
+      .map(q => {
+        const key = q.parameter_key || q.question
+        const val = values[key]
+        if (!val) return null
+        return `${q.question} → ${val}`
+      })
+      .filter(Boolean)
+
+    if (parts.length === 0) return
+    onSubmit(parts.join('\n'))
+    setSubmitted(true)
   }
 
   function handleCancel() {
-    setValue('')
-    setExpanded(false)
+    setValues({})
   }
 
-  if (!expanded) {
+  if (submitted) {
     return (
-      <button
-        onClick={() => setExpanded(true)}
-        className="block w-full text-left text-sm text-gray-700 hover:bg-red-100 rounded px-2 py-1.5 transition-colors"
-      >
-        <span className="font-medium">{q.question}</span>
-        {q.why && <span className="block text-xs text-gray-500 mt-0.5">{q.why}</span>}
-      </button>
+      <div className="border-l-4 border-green-400 bg-green-50 rounded-r-lg p-3">
+        <p className="text-xs text-green-700">Jawaban terkirim, menunggu analisis...</p>
+      </div>
     )
   }
 
+  const filledCount = items.filter(q => values[q.parameter_key || q.question]?.trim()).length
+
   return (
-    <div className="px-2 py-2 bg-white rounded border border-red-200">
-      <p className="text-sm font-medium text-gray-700 mb-2">{q.question}</p>
-      {q.why && <p className="text-xs text-gray-500 mb-2">{q.why}</p>}
+    <div className="border-l-4 border-red-400 bg-red-50 rounded-r-lg p-4">
+      <h4 className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-3">Perlu Dikonfirmasi</h4>
+      <div className="space-y-3">
+        {items.map((q, i) => {
+          const key = q.parameter_key || q.question
+          return (
+            <div key={i} className="bg-white rounded border border-red-100 p-3">
+              <p className="text-sm font-medium text-gray-700">{q.question}</p>
+              {q.why && <p className="text-xs text-gray-500 mt-0.5 mb-2">{q.why}</p>}
 
-      {q.type === 'select' && q.options ? (
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          {q.options.map((opt, i) => (
-            <button
-              key={i}
-              onClick={() => setValue(opt)}
-              className={`rounded-full border px-3 py-1 text-xs transition-colors ${value === opt ? 'border-red-500 bg-red-100 text-red-700 font-medium' : 'border-gray-200 text-gray-700 hover:bg-gray-100'}`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      ) : q.type === 'number' ? (
-        <input
-          type="number"
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          placeholder="0"
-          className="rounded border border-gray-300 px-2 py-1.5 text-sm w-full mb-2 focus:outline-none focus:ring-1 focus:ring-red-400"
-        />
-      ) : (
-        <input
-          type="text"
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          placeholder="Ketik jawaban..."
-          className="rounded border border-gray-300 px-2 py-1.5 text-sm w-full mb-2 focus:outline-none focus:ring-1 focus:ring-red-400"
-          onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
-        />
-      )}
+              {q.type === 'select' && q.options ? (
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {q.options.map((opt, j) => (
+                    <button
+                      key={j}
+                      onClick={() => setValue(key, opt)}
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${values[key] === opt ? 'border-red-500 bg-red-100 text-red-700 font-medium' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              ) : q.type === 'number' ? (
+                <input
+                  type="number"
+                  value={values[key] || ''}
+                  onChange={e => setValue(key, e.target.value)}
+                  placeholder="0"
+                  className="mt-1 rounded border border-gray-300 px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-red-400"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={values[key] || ''}
+                  onChange={e => setValue(key, e.target.value)}
+                  placeholder="Ketik jawaban..."
+                  className="mt-1 rounded border border-gray-300 px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-red-400"
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 mt-3">
         <button
           onClick={handleSubmit}
-          disabled={!value.trim()}
-          className="rounded bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700 disabled:opacity-30"
+          disabled={filledCount === 0}
+          className="rounded bg-red-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-30"
         >
-          Kirim
+          Kirim ({filledCount}/{items.length})
         </button>
         <button
           onClick={handleCancel}
-          className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-100"
+          className="rounded border border-gray-300 px-4 py-1.5 text-xs text-gray-600 hover:bg-gray-100"
         >
           Batal
         </button>
       </div>
+
+      <p className="text-xs text-gray-500 mt-2 italic">Analisis lengkap setelah pertanyaan di atas dijawab.</p>
     </div>
   )
 }
@@ -105,17 +125,7 @@ export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocu
   return (
     <div className="space-y-3">
       {perlu_dikonfirmasi.length > 0 && (
-        <div className="border-l-4 border-red-400 bg-red-50 rounded-r-lg p-4">
-          <h4 className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-2">Perlu Dikonfirmasi</h4>
-          <div className="space-y-2">
-            {perlu_dikonfirmasi.map((q, i) => (
-              <PerluItem key={i} q={q} onAnswer={onPrefill} />
-            ))}
-          </div>
-          {hasBlocking && (
-            <p className="text-xs text-gray-500 mt-2 italic">Analisis lengkap setelah pertanyaan di atas dijawab.</p>
-          )}
-        </div>
+        <PerluSection items={perlu_dikonfirmasi} onSubmit={onPrefill} />
       )}
 
       {/* Citation links — click to focus in sidebar */}
