@@ -17,6 +17,7 @@ from ..schemas import (
     PerluDikonfirmasiItem,
 )
 from ..services.llm import call_llm_chat, call_llm_simple
+from ..services.graph import validate_citations
 
 router = APIRouter()
 
@@ -100,6 +101,15 @@ async def chat(req: ChatRequest):
         return ChatResponse(session_id=session_id, response=body)
 
     body = _parse_llm_response(parsed)
+
+    # Post-validate citations — strip any the graph can't back
+    if body.hukum:
+        cited = [h.legal_basis for h in body.hukum if h.legal_basis]
+        valid = validate_citations(cited)
+        for h in body.hukum:
+            if h.legal_basis and not valid.get(h.legal_basis):
+                h.legal_basis = ""
+
     _sessions[session_id].append({"role": "assistant", "content": str(parsed)})
 
     return ChatResponse(session_id=session_id, response=body)

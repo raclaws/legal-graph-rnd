@@ -66,7 +66,46 @@ def get_provision(node_id: str) -> dict | None:
         return None
 
 
-def get_graph_stats() -> dict:
+def validate_citations(node_ids: list[str]) -> dict[str, bool]:
+    """Check which node_ids actually exist in the graph. Returns {node_id: exists}."""
+    if not node_ids:
+        return {}
+
+    results = {nid: False for nid in node_ids}
+
+    try:
+        g = LegalGraph()
+        with g.driver.session() as session:
+            for nid in node_ids:
+                # Exact match
+                r = session.run(
+                    "MATCH (p:Provision {node_id: $nid}) RETURN p.node_id LIMIT 1",
+                    nid=nid,
+                )
+                if r.single():
+                    results[nid] = True
+                    continue
+
+                # Fuzzy match (without Bab)
+                parts = nid.split("/")
+                if len(parts) >= 3:
+                    reg_prefix = "/".join(parts[:3])
+                    rest = "/" + "/".join(parts[3:])
+                    pasal_idx = rest.find("/Pasal/")
+                    pasal_part = rest[pasal_idx:] if pasal_idx >= 0 else ""
+                    if pasal_part:
+                        r = session.run(
+                            "MATCH (p:Provision) WHERE p.node_id STARTS WITH $prefix AND p.node_id ENDS WITH $suffix RETURN p.node_id LIMIT 1",
+                            prefix=reg_prefix,
+                            suffix=pasal_part,
+                        )
+                        if r.single():
+                            results[nid] = True
+        g.close()
+    except Exception:
+        pass
+
+    return results
     try:
         g = LegalGraph()
         with g.driver.session() as session:
