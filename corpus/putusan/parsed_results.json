@@ -1,0 +1,91 @@
+[
+  {
+    "file": "11f036d84e9c69a09f34313334353130.html",
+    "case_number": null,
+    "court": null,
+    "court_type": null,
+    "year": null,
+    "province": null,
+    "plaintiff_type": null,
+    "defendant_type": null,
+    "dispute_type": null,
+    "facts_summary": null,
+    "norms_cited": [],
+    "provisions_cited": [],
+    "outcome": null,
+    "outcome_detail": null,
+    "award_amount": null,
+    "pertimbangan_summary": null,
+    "confidence": "low"
+  },
+  {
+    "file": "putusan_392_k_pdt.sus-phi_2025_20260702104608.pdf",
+    "case_number": "392 K/Pdt.Sus-PHI/2025",
+    "court": "Mahkamah Agung",
+    "court_type": "ma",
+    "year": 2025,
+    "province": null,
+    "plaintiff_type": null,
+    "defendant_type": null,
+    "dispute_type": null,
+    "facts_summary": null,
+    "norms_cited": [],
+    "provisions_cited": [
+      {
+        "raw": "Pasal 12 Undang Undang Nomor 2 Tahun 2004",
+        "pasal": "12",
+        "groups": [
+          "12",
+          null,
+          "2",
+          "2004"
+        ]
+      },
+      {
+        "raw": "Pasal 151 juncto Pasal 161 Undang Undang Nomor 13 Tahun \n2003",
+        "pasal": "151",
+        "groups": [
+          "151",
+          null,
+          "13",
+          "2003"
+        ]
+      },
+      {
+        "raw": "Pasal 40 Peraturan Pemerintah Nomor 35 Tahun 2021",
+        "pasal": "40",
+        "groups": [
+          "40",
+          null,
+          "35",
+          "2021"
+        ]
+      },
+      {
+        "raw": "Pasal 58 Undang Undang Nomor 2 Tahun 2004",
+        "pasal": "58",
+        "groups": [
+          "58",
+          null,
+          "2",
+          "2004"
+        ]
+      },
+      {
+        "raw": "Pasal 151 juncto Pasal 161 Undang Undang Nomor 13 \nTahun 2003",
+        "pasal": "151",
+        "groups": [
+          "151",
+          null,
+          "13",
+          "2003"
+        ]
+      }
+    ],
+    "outcome": "employee_wins",
+    "outcome_detail": "M E N G A D I L I: \n- \nMenolak permohonan kasasi dari Pemohon Kasasi THE SUMMIT \nBISTRO tersebut; \n- \nMemperbaiki amar Putusan Pengadilan Hubungan Industrial pada \nPengadilan Negeri Tanjungkarang Nomo",
+    "award_amount": 299000000,
+    "pertimbangan_summary": null,
+    "confidence": "high"
+  }
+]
