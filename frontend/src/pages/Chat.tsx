@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { sendMessage } from '../api'
-import type { Message, ChatResponseBody } from '../types'
+import type { Message } from '../types'
 import ChatInput from '../components/chat/ChatInput'
 import ChatMessage from '../components/chat/ChatMessage'
 import ThreeSpaceResponse from '../components/chat/ThreeSpaceResponse'
