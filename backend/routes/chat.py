@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import base64
 import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, File, Form, UploadFile
 
 from ..schemas import (
     AnalisisBlock,
@@ -14,33 +15,34 @@ from ..schemas import (
     HukumItem,
     PerluDikonfirmasiItem,
 )
-from ..services.llm import call_llm_chat
+from ..services.llm import call_llm_chat, call_llm_simple
 
 router = APIRouter()
 
-# In-memory session store (replace with Redis if needed)
 _sessions: dict[str, list[dict]] = {}
 
 
-@router.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest):
-    session_id = req.session_id or str(uuid.uuid4())
+def _extract_text(content: bytes, filename: str) -> str:
+    name = filename.lower()
+    if name.endswith(".pdf"):
+        try:
+            import pymupdf
+            doc = pymupdf.open(stream=content, filetype="pdf")
+            text = ""
+            for page in doc:
+                text += page.get_text() + "\n"
+            return text[:8000] if text.strip() else "[PDF is scanned/image-based]"
+        except Exception:
+            return "[Could not read PDF]"
+    elif name.endswith(".txt"):
+        try:
+            return content.decode("utf-8")[:8000]
+        except Exception:
+            return content.decode("latin-1")[:8000]
+    return f"[File: {filename}, {len(content)} bytes]"
 
-    if session_id not in _sessions:
-        _sessions[session_id] = []
 
-    _sessions[session_id].append({"role": "user", "content": req.message})
-
-    parsed = call_llm_chat(_sessions[session_id])
-
-    if not parsed:
-        body = ChatResponseBody(
-            hukum=[],
-            analisis=AnalisisBlock(text="Tidak dapat memproses permintaan. Coba lagi."),
-            perlu_dikonfirmasi=[],
-        )
-        return ChatResponse(session_id=session_id, response=body)
-
+def _parse_llm_response(parsed: dict) -> ChatResponseBody:
     hukum = []
     for item in parsed.get("hukum", []):
         if isinstance(item, str):
@@ -66,12 +68,94 @@ async def chat(req: ChatRequest):
             type=q.get("type", "text"),
         ))
 
-    body = ChatResponseBody(
-        hukum=hukum,
-        analisis=analisis,
-        perlu_dikonfirmasi=perlu,
-    )
+    return ChatResponseBody(hukum=hukum, analisis=analisis, perlu_dikonfirmasi=perlu)
 
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat(req: ChatRequest):
+    session_id = req.session_id or str(uuid.uuid4())
+
+    if session_id not in _sessions:
+        _sessions[session_id] = []
+
+    message = req.message
+
+    if req.attachments:
+        for att in req.attachments:
+            content = base64.b64decode(att.data_base64)
+            doc_text = _extract_text(content, att.filename)
+            message += f"\n\n[Document: {att.filename}]\n{doc_text}"
+
+    _sessions[session_id].append({"role": "user", "content": message})
+
+    parsed = call_llm_chat(_sessions[session_id])
+
+    if not parsed:
+        body = ChatResponseBody(
+            hukum=[],
+            analisis=AnalisisBlock(text="Tidak dapat memproses permintaan. Coba lagi."),
+            perlu_dikonfirmasi=[],
+        )
+        return ChatResponse(session_id=session_id, response=body)
+
+    body = _parse_llm_response(parsed)
     _sessions[session_id].append({"role": "assistant", "content": str(parsed)})
 
     return ChatResponse(session_id=session_id, response=body)
+
+
+@router.post("/chat/upload", response_model=ChatResponse)
+async def chat_upload(
+    file: UploadFile = File(...),
+    message: str = Form("Analisis dokumen ini"),
+    session_id: str = Form(""),
+):
+    """Upload a document and run compliance analysis."""
+    from src.compliance.pipeline import run_compliance_pipeline
+
+    sid = session_id or str(uuid.uuid4())
+    if sid not in _sessions:
+        _sessions[sid] = []
+
+    content = await file.read()
+    doc_text = _extract_text(content, file.filename or "document")
+
+    _sessions[sid].append({"role": "user", "content": f"{message}\n\n[Document: {file.filename}]"})
+
+    report, logs = run_compliance_pipeline(doc_text, call_llm_simple, file.filename or "document")
+
+    if report:
+        from src.compliance.obligations import Verdict
+        hukum = []
+        for r in report.results:
+            if r.verdict == Verdict.VIOLATED:
+                hukum.append(HukumItem(
+                    description=f"PELANGGARAN: {r.obligation_description}",
+                    legal_basis=r.legal_basis,
+                    severity=r.severity.value,
+                ))
+            elif r.verdict == Verdict.COMPLIANT:
+                hukum.append(HukumItem(
+                    description=f"OK: {r.obligation_description}",
+                    legal_basis=r.legal_basis,
+                    severity="low",
+                ))
+
+        analisis = AnalisisBlock(
+            text=f"Score: {report.score_pct}% — {report.compliant} compliant, {report.violated} violations, {report.not_evaluated} unclear"
+        )
+
+        body = ChatResponseBody(hukum=hukum, analisis=analisis, perlu_dikonfirmasi=[])
+    else:
+        parsed = call_llm_chat(_sessions[sid] + [{"role": "user", "content": doc_text[:4000]}])
+        if parsed:
+            body = _parse_llm_response(parsed)
+        else:
+            body = ChatResponseBody(
+                hukum=[],
+                analisis=AnalisisBlock(text="Gagal menganalisis dokumen."),
+                perlu_dikonfirmasi=[],
+            )
+
+    _sessions[sid].append({"role": "assistant", "content": "compliance report"})
+    return ChatResponse(session_id=sid, response=body)

@@ -16,6 +16,24 @@ export async function sendMessage(
   return res.json()
 }
 
+export async function sendMessageWithFile(
+  message: string,
+  file: File,
+  sessionId?: string,
+): Promise<ChatResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('message', message)
+  if (sessionId) formData.append('session_id', sessionId)
+
+  const res = await fetch(`${BASE}/api/chat/upload`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) throw new Error(`Upload failed: ${res.status}`)
+  return res.json()
+}
+
 export async function calculateSeverance(req: SeveranceRequest): Promise<SeveranceResponse> {
   const res = await fetch(`${BASE}/api/calculate/severance`, {
     method: 'POST',

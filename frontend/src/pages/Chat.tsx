@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { sendMessage } from '../api'
+import { sendMessage, sendMessageWithFile } from '../api'
 import type { Message } from '../types'
 import ChatInput from '../components/chat/ChatInput'
 import ChatMessage from '../components/chat/ChatMessage'
@@ -19,13 +19,19 @@ export default function Chat() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  async function handleSend(text: string) {
-    const userMsg: Message = { role: 'user', content: text, timestamp: Date.now() }
+  async function handleSend(text: string, file?: File) {
+    const userMsg: Message = {
+      role: 'user',
+      content: file ? `${text}\n\n📎 ${file.name}` : text,
+      timestamp: Date.now(),
+    }
     setMessages(prev => [...prev, userMsg])
     setLoading(true)
 
     try {
-      const res = await sendMessage(text, sessionId)
+      const res = file
+        ? await sendMessageWithFile(text, file, sessionId)
+        : await sendMessage(text, sessionId)
       setSessionId(res.session_id)
 
       const assistantMsg: Message = {
