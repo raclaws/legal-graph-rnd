@@ -23,9 +23,16 @@ export default function Chat() {
 
   const allHukum = useMemo(() => {
     const items: HukumItem[] = []
+    const seen = new Set<string>()
     for (const msg of messages) {
       if (msg.role === 'assistant' && msg.response) {
-        items.push(...msg.response.hukum)
+        for (const item of msg.response.hukum) {
+          const key = `${item.legal_basis}||${item.description}`
+          if (!seen.has(key)) {
+            seen.add(key)
+            items.push(item)
+          }
+        }
       }
     }
     return items
