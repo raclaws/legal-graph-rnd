@@ -42,7 +42,11 @@ export default function ProvisionPanel({ nodeId, onClose }: Props) {
         )}
 
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 rounded p-3">{error}</div>
+          <div className="text-sm text-gray-600 bg-gray-50 rounded p-3">
+            <p className="font-medium text-gray-700 mb-1">Pasal tidak ditemukan di database</p>
+            <p className="text-xs text-gray-500">Kemungkinan pasal ini belum di-ingest ke graph, atau LLM mengutip referensi yang tidak tepat.</p>
+            <p className="text-xs text-blue-600 mt-2 font-mono">{nodeId}</p>
+          </div>
         )}
 
         {data && (

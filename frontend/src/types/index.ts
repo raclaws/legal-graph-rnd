@@ -3,6 +3,7 @@ export interface HukumItem {
   legal_basis: string
   severity: 'critical' | 'high' | 'medium' | 'low'
   legal_text_summary?: string
+  doc_evidence?: string
 }
 
 export interface PerluDikonfirmasiItem {
@@ -18,10 +19,17 @@ export interface AnalisisBlock {
   disclaimer: string
 }
 
+export interface ActionItem {
+  description: string
+  severity: string
+  legal_basis: string
+}
+
 export interface ChatResponseBody {
   hukum: HukumItem[]
   analisis: AnalisisBlock | null
   perlu_dikonfirmasi: PerluDikonfirmasiItem[]
+  actions: ActionItem[]
   quick_actions?: { label: string; prefill: string }[]
 }
 

@@ -25,6 +25,7 @@ class HukumItem(BaseModel):
     legal_basis: str
     severity: str = "medium"
     legal_text_summary: str | None = None
+    doc_evidence: str | None = None
 
 
 class PerluDikonfirmasiItem(BaseModel):
@@ -33,6 +34,12 @@ class PerluDikonfirmasiItem(BaseModel):
     options: list[str] | None = None
     parameter_key: str = ""
     type: str = "text"
+
+
+class ActionItem(BaseModel):
+    description: str
+    severity: str = "high"
+    legal_basis: str = ""
 
 
 class AnalisisBlock(BaseModel):
@@ -49,6 +56,7 @@ class ChatResponseBody(BaseModel):
     hukum: list[HukumItem] = []
     analisis: AnalisisBlock | None = None
     perlu_dikonfirmasi: list[PerluDikonfirmasiItem] = []
+    actions: list[ActionItem] = []
     quick_actions: list[dict] | None = None
 
 

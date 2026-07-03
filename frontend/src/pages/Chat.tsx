@@ -1,23 +1,46 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { sendMessage, sendMessageWithFile } from '../api'
-import type { Message } from '../types'
+import type { Message, HukumItem } from '../types'
 import ChatInput from '../components/chat/ChatInput'
 import ChatMessage from '../components/chat/ChatMessage'
 import ThreeSpaceResponse from '../components/chat/ThreeSpaceResponse'
 import QuickActions from '../components/chat/QuickActions'
 import ThreeSpaceSkeleton from '../components/chat/ThreeSpaceSkeleton'
 import ProvisionPanel from '../components/shared/ProvisionPanel'
+import HukumSidebar from '../components/shared/HukumSidebar'
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([])
   const [sessionId, setSessionId] = useState<string>()
   const [loading, setLoading] = useState(false)
   const [panelNodeId, setPanelNodeId] = useState<string | null>(null)
+  const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  const allHukum = useMemo(() => {
+    const items: HukumItem[] = []
+    for (const msg of messages) {
+      if (msg.role === 'assistant' && msg.response) {
+        items.push(...msg.response.hukum)
+      }
+    }
+    return items
+  }, [messages])
+
+  function getHukumOffset(msgIndex: number): number {
+    let offset = 0
+    for (let i = 0; i < msgIndex; i++) {
+      const msg = messages[i]
+      if (msg.role === 'assistant' && msg.response) {
+        offset += msg.response.hukum.length
+      }
+    }
+    return offset
+  }
 
   async function handleSend(text: string, file?: File) {
     const userMsg: Message = {
@@ -53,9 +76,17 @@ export default function Chat() {
     }
   }
 
+  function handleCitationFocus(index: number) {
+    setFocusedHukum(index)
+    setTimeout(() => setFocusedHukum(null), 2000)
+  }
+
+  const hasSidebar = allHukum.length > 0
+
   return (
     <div className="flex flex-col h-[calc(100vh-57px)]">
-      <div className={`flex-1 overflow-y-auto px-4 py-6 ${panelNodeId ? 'pr-[25rem]' : ''}`}>
+      <div className={`flex-1 overflow-y-auto px-4 py-6 ${hasSidebar ? 'pr-84' : ''} ${panelNodeId ? 'pr-[25rem]' : ''}`}
+           style={hasSidebar && !panelNodeId ? { paddingRight: '21rem' } : panelNodeId ? { paddingRight: '25rem' } : {}}>
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.length === 0 && (
             <div className="mt-20 text-center">
@@ -73,7 +104,8 @@ export default function Chat() {
                 <ThreeSpaceResponse
                   response={msg.response}
                   onPrefill={handleSend}
-                  onCitationClick={setPanelNodeId}
+                  onCitationFocus={handleCitationFocus}
+                  hukumOffset={getHukumOffset(i)}
                 />
               ) : (
                 <ChatMessage role="assistant" content={msg.content} />
@@ -87,11 +119,18 @@ export default function Chat() {
         </div>
       </div>
 
-      <div className={`border-t border-gray-200 bg-white px-4 py-3 ${panelNodeId ? 'pr-[25rem]' : ''}`}>
+      <div className={`border-t border-gray-200 bg-white px-4 py-3`}
+           style={hasSidebar && !panelNodeId ? { paddingRight: '21rem' } : panelNodeId ? { paddingRight: '25rem' } : {}}>
         <div className="max-w-3xl mx-auto">
           <ChatInput onSend={handleSend} disabled={loading} />
         </div>
       </div>
+
+      <HukumSidebar
+        items={allHukum}
+        focusedIndex={focusedHukum}
+        onCitationClick={setPanelNodeId}
+      />
 
       <ProvisionPanel nodeId={panelNodeId} onClose={() => setPanelNodeId(null)} />
     </div>

@@ -8,6 +8,7 @@ import uuid
 from fastapi import APIRouter, File, Form, UploadFile
 
 from ..schemas import (
+    ActionItem,
     AnalisisBlock,
     ChatRequest,
     ChatResponse,
@@ -127,25 +128,45 @@ async def chat_upload(
     if report:
         from src.compliance.obligations import Verdict
         hukum = []
+        actions = []
+        unclear = []
         for r in report.results:
             if r.verdict == Verdict.VIOLATED:
+                evidence = None
+                if r.extracted_value is not None:
+                    evidence = f"Ditemukan: {r.extracted_value}"
+                elif "GAGAL:" in (r.detail or ""):
+                    evidence = r.detail.split("|")[0].strip()
+
                 hukum.append(HukumItem(
-                    description=f"PELANGGARAN: {r.obligation_description}",
+                    description=r.obligation_description,
                     legal_basis=r.legal_basis,
                     severity=r.severity.value,
+                    doc_evidence=evidence,
                 ))
+                actions.append(ActionItem(
+                    description=f"Perbaiki: {r.obligation_description}",
+                    severity=r.severity.value,
+                    legal_basis=r.legal_basis,
+                ))
+            elif r.verdict == Verdict.NOT_EVALUATED:
+                unclear.append(r.obligation_description)
             elif r.verdict == Verdict.COMPLIANT:
                 hukum.append(HukumItem(
-                    description=f"OK: {r.obligation_description}",
+                    description=r.obligation_description,
                     legal_basis=r.legal_basis,
                     severity="low",
                 ))
 
+        unclear_text = ""
+        if unclear:
+            unclear_text = f"\n\nTidak dapat dievaluasi ({len(unclear)} item — data tidak ditemukan dalam dokumen):\n" + "\n".join(f"• {u}" for u in unclear)
+
         analisis = AnalisisBlock(
-            text=f"Score: {report.score_pct}% — {report.compliant} compliant, {report.violated} violations, {report.not_evaluated} unclear"
+            text=f"Score: {report.score_pct}% — {report.compliant} compliant, {report.violated} violations, {len(unclear)} tidak dapat dievaluasi{unclear_text}"
         )
 
-        body = ChatResponseBody(hukum=hukum, analisis=analisis, perlu_dikonfirmasi=[])
+        body = ChatResponseBody(hukum=hukum, analisis=analisis, perlu_dikonfirmasi=[], actions=actions)
     else:
         parsed = call_llm_chat(_sessions[sid] + [{"role": "user", "content": doc_text[:4000]}])
         if parsed:
