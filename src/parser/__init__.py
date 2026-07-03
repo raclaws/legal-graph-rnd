@@ -133,11 +133,26 @@ def split_into_bab_blocks(text: str) -> list[tuple[str, str, str]]:
 def split_into_pasal_blocks(text: str) -> list[tuple[str, str]]:
     """Split body text into (pasal_number, pasal_text) blocks."""
     matches = list(RE_PASAL.finditer(text))
+
+    # Filter out false positives: references like "dimaksud dalam\nPasal 4\nayat (1)"
+    # Real Pasal headers are followed by (1), a capital letter, or blank then content.
+    # False ones are followed by lowercase "ayat", "huruf", "angka" (broken references).
+    valid_matches = []
+    for m in matches:
+        after = text[m.end():m.end()+30].lstrip('\n')
+        if re.match(r'^(ayat|huruf|angka)\b', after, re.IGNORECASE) and not after.startswith('('):
+            continue
+        # Also check before: false matches are preceded by "dimaksud dalam", "sebagaimana", etc.
+        before = text[max(0, m.start()-40):m.start()]
+        if re.search(r'(dimaksud|dalam|sebagaimana)\s*$', before):
+            continue
+        valid_matches.append(m)
+
     blocks = []
-    for i, m in enumerate(matches):
+    for i, m in enumerate(valid_matches):
         number = m.group(1)
         start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        end = valid_matches[i + 1].start() if i + 1 < len(valid_matches) else len(text)
         block_text = text[start:end].strip()
         blocks.append((number, block_text))
     return blocks
