@@ -1,11 +1,13 @@
-"""Chat endpoint — POST /api/chat."""
+"""Chat endpoint — POST /api/chat + /api/chat/stream (SSE)."""
 
 from __future__ import annotations
 
 import base64
+import json
 import uuid
 
 from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.responses import StreamingResponse
 
 from ..schemas import (
     ActionItem,
@@ -93,6 +95,42 @@ def _build_definition_context(keywords: list[str]) -> str:
         text = (d["text"] or "")[:400]
         context += f"[{d['node_id']}]: {text}\n\n"
     return context
+
+
+def _extract_analisis_chunk(buffer: str) -> str:
+    """Extract readable text from partial analisis JSON value.
+
+    Buffer starts after '"analisis": "'. We read until we hit an unescaped quote
+    that closes the string, unescaping JSON sequences along the way.
+    Stops before a trailing backslash (incomplete escape — wait for next token).
+    """
+    result = []
+    i = 0
+    while i < len(buffer):
+        c = buffer[i]
+        if c == '\\':
+            if i + 1 >= len(buffer):
+                break  # incomplete escape, wait for next token
+            nc = buffer[i + 1]
+            if nc == 'n':
+                result.append('\n')
+            elif nc == '"':
+                result.append('"')
+            elif nc == '\\':
+                result.append('\\')
+            elif nc == 't':
+                result.append('\t')
+            elif nc == '/':
+                result.append('/')
+            else:
+                result.append(nc)
+            i += 2
+        elif c == '"':
+            break  # end of JSON string value
+        else:
+            result.append(c)
+            i += 1
+    return ''.join(result)
 
 
 def _extract_text(content: bytes, filename: str) -> str:
@@ -187,6 +225,12 @@ async def chat(req: ChatRequest):
 
     body = _parse_llm_response(parsed)
 
+    # Hard gate: only allow perlu_dikonfirmasi for intents that genuinely need user input
+    _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
+    intent = parsed.get("intent", "")
+    if intent not in _INTENTS_THAT_NEED_INPUT:
+        body.perlu_dikonfirmasi = []
+
     # Post-validate citations — strip any the graph can't back
     if body.hukum:
         cited = [h.legal_basis for h in body.hukum if h.legal_basis]
@@ -273,7 +317,20 @@ async def chat_upload(
             text=f"Score: {report.score_pct}% — {report.compliant} compliant, {report.violated} violations, {len(unclear)} tidak dapat dievaluasi{unclear_text}"
         )
 
-        body = ChatResponseBody(hukum=hukum, analisis=analisis, perlu_dikonfirmasi=[], actions=actions)
+        body = ChatResponseBody(
+            response_type="compliance_report",
+            hukum=hukum,
+            analisis=analisis,
+            perlu_dikonfirmasi=[],
+            actions=actions,
+            compliance_score=report.score_pct,
+            compliance_doc_type=report.doc_type.value,
+            compliance_summary={
+                "compliant": report.compliant,
+                "violated": report.violated,
+                "not_evaluated": report.not_evaluated,
+            },
+        )
     else:
         parsed = call_llm_chat(_sessions[sid] + [{"role": "user", "content": doc_text[:4000]}])
         if parsed:
@@ -287,3 +344,108 @@ async def chat_upload(
 
     _sessions[sid].append({"role": "assistant", "content": "compliance report"})
     return ChatResponse(session_id=sid, response=body)
+
+
+@router.post("/chat/stream")
+async def chat_stream(req: ChatRequest):
+    """SSE streaming endpoint. Async generator with proper headers."""
+    from ..services.llm import async_stream_llm_chat
+
+    session_id = req.session_id or str(uuid.uuid4())
+    if session_id not in _sessions:
+        _sessions[session_id] = []
+
+    message = req.message
+    if req.attachments:
+        for att in req.attachments:
+            content = base64.b64decode(att.data_base64)
+            doc_text = _extract_text(content, att.filename)
+            message += f"\n\n[Document: {att.filename}]\n{doc_text}"
+
+    _sessions[session_id].append({"role": "user", "content": message})
+
+    definition_context = ""
+    conceptual_keywords = _detect_conceptual_question(req.message)
+    if conceptual_keywords:
+        definition_context = _build_definition_context(conceptual_keywords)
+
+    chat_messages = _sessions[session_id][:]
+    if definition_context and chat_messages:
+        chat_messages[-1] = {
+            "role": "user",
+            "content": chat_messages[-1]["content"] + definition_context,
+        }
+
+    async def generate():
+        full_text = ""
+        analisis_started = False
+        analisis_key = '"analisis": "'
+        last_emitted = 0
+
+        yield f"data: {json.dumps({'type': 'status', 'text': 'Memproses...'})}\n\n"
+
+        token_count = 0
+        try:
+            async for token in async_stream_llm_chat(chat_messages):
+                full_text += token
+                token_count += 1
+                if token_count == 1:
+                    yield f"data: {json.dumps({'type': 'status', 'text': 'Menganalisis...'})}\n\n"
+
+                if not analisis_started:
+                    if analisis_key in full_text:
+                        analisis_started = True
+                        start_idx = full_text.index(analisis_key) + len(analisis_key)
+                        analisis_buffer = full_text[start_idx:]
+                        chunk = _extract_analisis_chunk(analisis_buffer)
+                        if chunk:
+                            last_emitted = len(chunk)
+                            yield f"data: {json.dumps({'type': 'text', 'delta': chunk})}\n\n"
+                else:
+                    start_idx = full_text.index(analisis_key) + len(analisis_key)
+                    analisis_buffer = full_text[start_idx:]
+                    chunk = _extract_analisis_chunk(analisis_buffer)
+                    if chunk and len(chunk) > last_emitted:
+                        new_text = chunk[last_emitted:]
+                        last_emitted = len(chunk)
+                        yield f"data: {json.dumps({'type': 'text', 'delta': new_text})}\n\n"
+        except Exception:
+            yield f"data: {json.dumps({'type': 'complete', 'data': {'analisis': 'Tidak dapat memproses.', 'hukum': []}, 'session_id': session_id})}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+
+        # Parse complete response
+        raw = full_text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+            if raw.endswith("```"):
+                raw = raw[:-3]
+            raw = raw.strip()
+
+        try:
+            parsed = json.loads(raw)
+        except (json.JSONDecodeError, ValueError):
+            parsed = None
+
+        if parsed:
+            _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
+            intent = parsed.get("intent", "")
+            if intent not in _INTENTS_THAT_NEED_INPUT:
+                parsed["perlu_dikonfirmasi"] = None
+
+            yield f"data: {json.dumps({'type': 'complete', 'data': parsed, 'session_id': session_id})}\n\n"
+        else:
+            yield f"data: {json.dumps({'type': 'complete', 'data': {'analisis': full_text or 'Tidak dapat memproses.', 'hukum': []}, 'session_id': session_id})}\n\n"
+
+        yield "data: [DONE]\n\n"
+        _sessions[session_id].append({"role": "assistant", "content": full_text})
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

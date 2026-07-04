@@ -340,17 +340,113 @@ def compute_derived_fields(fields: dict, doc_type: DocType) -> dict:
 
     # --- Peraturan Perusahaan derived fields ---
     if doc_type == DocType.PERATURAN_PERUSAHAAN:
-        # currency defaults to IDR if not explicitly foreign
         if not fields.get("currency"):
-            enriched["currency"] = None  # None = default IDR, passes the IN check
+            enriched["currency"] = None
+
+    # --- SK PHK derived fields ---
+    if doc_type == DocType.SK_PHK:
+        # Notice period: days between notice_date and effective_date
+        notice_date = fields.get("notice_date")
+        effective_date = fields.get("effective_date")
+        if notice_date and effective_date and not fields.get("notice_period_days"):
+            try:
+                from datetime import date
+                nd = date.fromisoformat(notice_date)
+                ed = date.fromisoformat(effective_date)
+                enriched["notice_period_days"] = (ed - nd).days
+            except (ValueError, TypeError):
+                pass
+
+        # Severance formula check: PP 35/2021 Pasal 40
+        # Table: <1yr=1, 1-2=2, 2-3=3, 3-4=4, 4-5=5, 5-6=6, 6-7=7, 7-8=8, >=8=9
+        tenure = fields.get("tenure_years")
+        severance_months = fields.get("severance_months")
+        if tenure is not None and severance_months is not None:
+            if tenure < 1:
+                expected = 1
+            elif tenure < 2:
+                expected = 2
+            elif tenure < 3:
+                expected = 3
+            elif tenure < 4:
+                expected = 4
+            elif tenure < 5:
+                expected = 5
+            elif tenure < 6:
+                expected = 6
+            elif tenure < 7:
+                expected = 7
+            elif tenure < 8:
+                expected = 8
+            else:
+                expected = 9
+            enriched["severance_meets_formula"] = severance_months >= expected
+            enriched["_expected_severance_months"] = expected
+
+    # --- Surat Peringatan derived fields ---
+    if doc_type == DocType.SURAT_PERINGATAN:
+        # valid_period_days from issued_date and valid_until
+        issued = fields.get("issued_date")
+        valid_until = fields.get("valid_until")
+        if issued and valid_until and not fields.get("valid_period_days"):
+            try:
+                from datetime import date
+                id_ = date.fromisoformat(issued)
+                vu = date.fromisoformat(valid_until)
+                enriched["valid_period_days"] = (vu - id_).days
+            except (ValueError, TypeError):
+                pass
 
     return enriched
 
 
 # === Step 4: Evaluate (deterministic) ===
 
+def _get_engine_registry():
+    """Lazy-load the YAML-based engine registry."""
+    from pathlib import Path
+    from src.compliance.engine.registry import Registry
+
+    domains_dir = Path(__file__).parent / "domains"
+    registry = Registry()
+    registry.load_directory(domains_dir)
+    return registry
+
+
 def get_obligations_for_doc_type(doc_type: DocType) -> list[Obligation]:
-    """Load obligations for a doc type. Graph-first, Python fallback."""
+    """Load obligations for a doc type. Engine-first, graph, then Python fallback."""
+
+    # Try YAML engine
+    registry = _get_engine_registry()
+    engine_obs = registry.get_obligations(doc_type.value)
+    if engine_obs:
+        # Adapt engine Obligation to pipeline Obligation (same interface)
+        from src.compliance.engine.types import Obligation as EngOb
+        from .obligations import Obligation as PipeOb, Evidence as PipeEv, Condition as PipeCond, EdgeCase as PipeEC, Severity as PipeSev, Operator as PipeOp
+
+        op_map = {
+            "eq": PipeOp.EQ, "neq": PipeOp.NEQ, "gt": PipeOp.GT, "gte": PipeOp.GTE,
+            "lt": PipeOp.LT, "lte": PipeOp.LTE, "in": PipeOp.IN, "not_in": PipeOp.NOT_IN,
+            "exists": PipeOp.EXISTS, "not_exists": PipeOp.NOT_EXISTS, "between": PipeOp.BETWEEN,
+        }
+        sev_map = {"critical": PipeSev.CRITICAL, "high": PipeSev.HIGH, "medium": PipeSev.MEDIUM, "low": PipeSev.LOW}
+
+        adapted = []
+        for eo in engine_obs:
+            adapted.append(PipeOb(
+                id=eo.id,
+                description=eo.description,
+                legal_basis=eo.legal_basis,
+                legal_text_summary=eo.legal_text,
+                applies_to=[doc_type],
+                conditions=[PipeCond(field=c.field, operator=op_map[c.op.value], value=c.value, description=c.note) for c in eo.conditions],
+                evidence=[PipeEv(field_path=e.field, operator=op_map[e.op.value], value=e.value, description=e.note) for e in eo.evidence],
+                severity=sev_map[eo.severity.value],
+                consequence=eo.consequence,
+                effective_from=eo.effective_from,
+                edge_cases=[PipeEC(condition=ec.when, behavior=ec.then, legal_basis=ec.basis) for ec in eo.edge_cases],
+            ))
+        return adapted
 
     # Try loading from Neo4j
     graph_norms = load_norms_from_graph(doc_type)

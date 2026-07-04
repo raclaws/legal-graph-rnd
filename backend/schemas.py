@@ -53,11 +53,16 @@ class ChatResponse(BaseModel):
 
 
 class ChatResponseBody(BaseModel):
+    response_type: str = "chat"  # "chat" | "compliance_report"
     hukum: list[HukumItem] = []
     analisis: AnalisisBlock | None = None
     perlu_dikonfirmasi: list[PerluDikonfirmasiItem] = []
     actions: list[ActionItem] = []
     quick_actions: list[dict] | None = None
+    # Compliance report fields (only when response_type = "compliance_report")
+    compliance_score: int | None = None
+    compliance_doc_type: str | None = None
+    compliance_summary: dict | None = None  # {compliant, violated, not_evaluated}
 
 
 # --- Severance Calculator ---
