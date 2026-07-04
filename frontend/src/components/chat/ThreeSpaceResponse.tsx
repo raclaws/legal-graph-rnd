@@ -244,7 +244,7 @@ function ComplianceScorecard({ response, onCitationClick }: { response: ChatResp
   )
 }
 
-export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocus, onCitationClick, hukumOffset = 0, showUnclear }: Props) {
+export default function ThreeSpaceResponse({ response, onPrefill, onCitationFocus, onCitationClick, hukumOffset = 0 }: Props) {
   if (response.response_type === 'compliance_report') {
     return <ComplianceScorecard response={response} onCitationClick={onCitationClick} />
   }

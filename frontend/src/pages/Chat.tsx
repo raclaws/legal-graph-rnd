@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { sendMessage, sendMessageWithFile, sendMessageStream } from '../api'
+import { sendMessageWithFile, sendMessageStream } from '../api'
 import type { Message, HukumItem, ChatResponseBody } from '../types'
 import ChatInput from '../components/chat/ChatInput'
 import ChatMessage from '../components/chat/ChatMessage'
