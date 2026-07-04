@@ -2,6 +2,11 @@ import type { ChatResponse, SeveranceRequest, SeveranceResponse, ProvisionRespon
 
 const BASE = ''
 
+function authHeaders(): Record<string, string> {
+  const token = localStorage.getItem('auth_token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 export interface ComplianceCheckRequest {
   context: Record<string, unknown>
 }
@@ -27,7 +32,7 @@ export async function sendMessage(
 ): Promise<ChatResponse> {
   const res = await fetch(`${BASE}/api/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ session_id: sessionId, message, context }),
   })
   if (!res.ok) throw new Error(`Chat failed: ${res.status}`)
@@ -48,7 +53,7 @@ export async function sendMessageStream(
 ): Promise<void> {
   const res = await fetch(`${BASE}/api/chat/stream`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ session_id: sessionId, message }),
   })
 
@@ -98,6 +103,7 @@ export async function sendMessageWithFile(
 
   const res = await fetch(`${BASE}/api/chat/upload`, {
     method: 'POST',
+    headers: { ...authHeaders() },
     body: formData,
   })
   if (!res.ok) throw new Error(`Upload failed: ${res.status}`)
@@ -107,7 +113,7 @@ export async function sendMessageWithFile(
 export async function checkCompliance(req: ComplianceCheckRequest): Promise<ComplianceCheckResponse> {
   const res = await fetch(`${BASE}/api/compliance/check`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(req),
   })
   if (!res.ok) throw new Error(`Compliance check failed: ${res.status}`)
@@ -117,7 +123,7 @@ export async function checkCompliance(req: ComplianceCheckRequest): Promise<Comp
 export async function calculateSeverance(req: SeveranceRequest): Promise<SeveranceResponse> {
   const res = await fetch(`${BASE}/api/calculate/severance`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(req),
   })
   if (!res.ok) throw new Error(`Calculator failed: ${res.status}`)
@@ -125,13 +131,17 @@ export async function calculateSeverance(req: SeveranceRequest): Promise<Severan
 }
 
 export async function getProvision(nodeId: string): Promise<ProvisionResponse> {
-  const res = await fetch(`${BASE}/api/provision/${nodeId}`)
+  const res = await fetch(`${BASE}/api/provision/${nodeId}`, {
+    headers: { ...authHeaders() },
+  })
   if (!res.ok) throw new Error(`Provision not found: ${res.status}`)
   return res.json()
 }
 
 export async function explainTerm(term: string): Promise<ExplainResponse> {
-  const res = await fetch(`${BASE}/api/explain?term=${encodeURIComponent(term)}`)
+  const res = await fetch(`${BASE}/api/explain?term=${encodeURIComponent(term)}`, {
+    headers: { ...authHeaders() },
+  })
   if (!res.ok) throw new Error(`Explain failed: ${res.status}`)
   return res.json()
 }
