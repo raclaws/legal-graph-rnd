@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 
+SETTINGS_PATH = Path(__file__).parent.parent.parent / ".settings.json"
+
 
 def _load_env():
     env_path = Path(__file__).parent.parent.parent / ".env"
@@ -19,9 +21,27 @@ def _load_env():
 
 _load_env()
 
-API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-BASE_URL = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
-MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+
+def _load_settings() -> dict:
+    if SETTINGS_PATH.exists():
+        try:
+            return json.loads(SETTINGS_PATH.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def _save_settings(data: dict):
+    SETTINGS_PATH.write_text(json.dumps(data, indent=2))
+
+
+def get_llm_config() -> tuple[str, str, str]:
+    """Returns (api_key, base_url, model) from settings file, env fallback."""
+    settings = _load_settings()
+    api_key = settings.get("api_key") or os.environ.get("ANTHROPIC_API_KEY", "")
+    base_url = settings.get("base_url") or os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+    model = settings.get("model") or os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+    return api_key, base_url, model
 
 
 SYSTEM_PROMPT = """You are an Indonesian HR compliance assistant backed by a legal knowledge graph with 17 parsed regulations and 5,676 provisions.
@@ -45,7 +65,13 @@ RESPONSE FORMAT — return JSON:
 RULES:
 - hukum: ONLY graph-backed facts. EVERY hukum item MUST have a non-empty legal_basis (node_id format like PP/2021/35/Bab/II/Pasal/8). If you cannot cite a specific Pasal, do NOT put it in hukum — put it in analisis instead.
 - analisis: Your reasoning/advice. Use [1], [2], [3] etc to reference hukum items by position. Always labeled as interpretation.
-- perlu_dikonfirmasi: Structured questions when critical info is missing.
+- perlu_dikonfirmasi: ONLY when the answer would change the legal outcome. Rules:
+  1. Maximum 2 questions per response. Never more.
+  2. Never ask if you can give a useful answer without it — give the answer first, then ask to refine.
+  3. Never ask what can be inferred from context (e.g., don't ask "apakah ini PKWT?" if the user already said "kontrak saya").
+  4. Never ask generic fact-finding questions ("berapa lama masa kerja?") unless calculating severance or UMP comparison.
+  5. If unsure whether to ask: give your best answer with assumptions stated, then offer "jika berbeda, beri tahu saya" at the end of analisis instead.
+  6. Prefer type "select" with concrete options over open-ended "text".
 - Return ONLY valid JSON, no markdown.
 
 KNOWLEDGE (from graph — 17 regulations):
@@ -67,18 +93,19 @@ KNOWLEDGE (from graph — 17 regulations):
 def call_llm_chat(messages: list[dict]) -> dict | None:
     import anthropic
 
-    if not API_KEY:
+    api_key, base_url, model = get_llm_config()
+    if not api_key:
         return None
 
     try:
-        client = anthropic.Anthropic(api_key=API_KEY, base_url=BASE_URL)
+        client = anthropic.Anthropic(api_key=api_key, base_url=base_url)
 
         api_messages = [{"role": "user", "content": f"{SYSTEM_PROMPT}\n\n{messages[0]['content']}"}]
         for msg in messages[1:]:
             api_messages.append({"role": msg["role"], "content": msg["content"]})
 
         response = client.messages.create(
-            model=MODEL,
+            model=model,
             max_tokens=2048,
             timeout=120.0,
             messages=api_messages,
@@ -111,13 +138,14 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
 def call_llm_simple(prompt: str) -> str | None:
     import anthropic
 
-    if not API_KEY:
+    api_key, base_url, model = get_llm_config()
+    if not api_key:
         return None
 
     try:
-        client = anthropic.Anthropic(api_key=API_KEY, base_url=BASE_URL)
+        client = anthropic.Anthropic(api_key=api_key, base_url=base_url)
         response = client.messages.create(
-            model=MODEL,
+            model=model,
             max_tokens=4096,
             timeout=120.0,
             messages=[{"role": "user", "content": prompt}],
@@ -132,3 +160,61 @@ def call_llm_simple(prompt: str) -> str | None:
         return None
     except Exception:
         return None
+
+
+def stream_llm_chat(messages: list[dict]):
+    """Generator that yields text tokens from the LLM. OpenAI-compatible gateway."""
+    import openai
+
+    api_key, base_url, model = get_llm_config()
+    if not api_key:
+        return
+
+    try:
+        client = openai.OpenAI(api_key=api_key, base_url=base_url + "/v1")
+
+        api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for msg in messages:
+            api_messages.append({"role": msg["role"], "content": msg["content"]})
+
+        stream = client.chat.completions.create(
+            model=model,
+            max_tokens=2048,
+            messages=api_messages,
+            stream=True,
+        )
+
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+    except Exception:
+        return
+
+
+async def async_stream_llm_chat(messages: list[dict]):
+    """Async generator that yields text tokens. OpenAI-compatible gateway."""
+    import openai
+
+    api_key, base_url, model = get_llm_config()
+    if not api_key:
+        return
+
+    try:
+        client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url + "/v1")
+
+        api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for msg in messages:
+            api_messages.append({"role": msg["role"], "content": msg["content"]})
+
+        stream = await client.chat.completions.create(
+            model=model,
+            max_tokens=2048,
+            messages=api_messages,
+            stream=True,
+        )
+
+        async for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+    except Exception:
+        return

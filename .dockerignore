@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.settings.json
+.venv
+venv
+__pycache__
+*.pyc
+frontend/
+corpus/raw/
+corpus/parsed/
+tests/
+docs/
+*.md
