@@ -10,6 +10,17 @@ import ProvisionPanel from '../components/shared/ProvisionPanel'
 import HukumSidebar from '../components/shared/HukumSidebar'
 import Markdown from '../components/shared/Markdown'
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia('(min-width: 768px)').matches)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+  return isDesktop
+}
+
 function StreamingBlocks({ text }: { text: string }) {
   const blocks = text.split(/\n\n+/)
   const pending = blocks.pop() || ''
@@ -161,11 +172,14 @@ export default function Chat() {
   }
 
   const hasSidebar = allHukum.length > 0
+  const isDesktop = useIsDesktop()
+
+  const contentPadRight = isDesktop ? (hasSidebar && !panelNodeId ? '21rem' : panelNodeId ? '25rem' : undefined) : undefined
 
   return (
     <div className="flex flex-col h-[calc(100vh-57px)]">
-      <div className={`flex-1 overflow-y-auto px-4 py-6 ${hasSidebar ? 'pr-84' : ''} ${panelNodeId ? 'pr-[25rem]' : ''}`}
-           style={hasSidebar && !panelNodeId ? { paddingRight: '21rem' } : panelNodeId ? { paddingRight: '25rem' } : {}}>
+      <div className="flex-1 overflow-y-auto px-4 py-6"
+           style={{ paddingRight: contentPadRight }}>
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.length === 0 && (
             <div className="mt-20 text-center">
@@ -224,8 +238,8 @@ export default function Chat() {
         </div>
       </div>
 
-      <div className={`border-t border-gray-200 bg-white px-4 py-3`}
-           style={hasSidebar && !panelNodeId ? { paddingRight: '21rem' } : panelNodeId ? { paddingRight: '25rem' } : {}}>
+      <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe"
+           style={{ paddingRight: contentPadRight }}>
         <div className="max-w-3xl mx-auto">
           <ChatInput onSend={handleSend} disabled={loading} />
         </div>
