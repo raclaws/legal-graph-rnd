@@ -1,21 +1,24 @@
+import { useState, useEffect } from 'react'
+
 export default function ThreeSpaceSkeleton() {
+  const [elapsed, setElapsed] = useState(0)
+
+  useEffect(() => {
+    const t = setInterval(() => setElapsed(s => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [])
+
+  const label = elapsed < 3 ? 'Memproses...' : elapsed < 8 ? 'Mencari regulasi...' : 'Menganalisis...'
+
   return (
-    <div className="space-y-3 animate-pulse">
-      <div className="border-l-4 border-blue-200 bg-blue-50/50 rounded-r-lg p-4">
-        <div className="h-3 w-16 bg-blue-200 rounded mb-3" />
-        <div className="space-y-2">
-          <div className="h-3 w-full bg-blue-100 rounded" />
-          <div className="h-3 w-3/4 bg-blue-100 rounded" />
-          <div className="h-3 w-5/6 bg-blue-100 rounded" />
-        </div>
+    <div className="flex items-center gap-3 py-3">
+      <div className="flex gap-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:150ms]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:300ms]" />
       </div>
-      <div className="border-l-4 border-amber-200 bg-amber-50/50 rounded-r-lg p-4">
-        <div className="h-3 w-20 bg-amber-200 rounded mb-3" />
-        <div className="space-y-2">
-          <div className="h-3 w-full bg-amber-100 rounded" />
-          <div className="h-3 w-2/3 bg-amber-100 rounded" />
-        </div>
-      </div>
+      <span className="text-sm text-gray-500">{label}</span>
+      <span className="text-xs text-gray-400 tabular-nums">{elapsed}s</span>
     </div>
   )
 }

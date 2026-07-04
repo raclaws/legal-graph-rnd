@@ -26,11 +26,15 @@ export interface ActionItem {
 }
 
 export interface ChatResponseBody {
+  response_type: 'chat' | 'compliance_report'
   hukum: HukumItem[]
   analisis: AnalisisBlock | null
   perlu_dikonfirmasi: PerluDikonfirmasiItem[]
   actions: ActionItem[]
   quick_actions?: { label: string; prefill: string }[]
+  compliance_score?: number
+  compliance_doc_type?: string
+  compliance_summary?: { compliant: number; violated: number; not_evaluated: number }
 }
 
 export interface ChatResponse {
