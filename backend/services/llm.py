@@ -6,7 +6,10 @@ import json
 import os
 from pathlib import Path
 
-SETTINGS_PATH = Path(__file__).parent.parent.parent / ".settings.json"
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+SETTINGS_PATH = _PROJECT_ROOT / "data" / ".settings.json"
+# Fallback: legacy location at project root
+_LEGACY_SETTINGS_PATH = _PROJECT_ROOT / ".settings.json"
 
 
 def _load_env():
@@ -23,15 +26,17 @@ _load_env()
 
 
 def _load_settings() -> dict:
-    if SETTINGS_PATH.exists():
-        try:
-            return json.loads(SETTINGS_PATH.read_text())
-        except (json.JSONDecodeError, OSError):
-            pass
+    for path in (SETTINGS_PATH, _LEGACY_SETTINGS_PATH):
+        if path.exists():
+            try:
+                return json.loads(path.read_text())
+            except (json.JSONDecodeError, OSError):
+                pass
     return {}
 
 
 def _save_settings(data: dict):
+    SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     SETTINGS_PATH.write_text(json.dumps(data, indent=2))
 
 
@@ -162,6 +167,11 @@ def call_llm_simple(prompt: str) -> str | None:
         return None
 
 
+def _openai_base_url(base_url: str) -> str:
+    """Ensure base_url ends with /v1 exactly once."""
+    return base_url.rstrip("/") + "/v1" if not base_url.rstrip("/").endswith("/v1") else base_url.rstrip("/")
+
+
 def stream_llm_chat(messages: list[dict]):
     """Generator that yields text tokens from the LLM. OpenAI-compatible gateway."""
     import openai
@@ -171,7 +181,7 @@ def stream_llm_chat(messages: list[dict]):
         return
 
     try:
-        client = openai.OpenAI(api_key=api_key, base_url=base_url + "/v1")
+        client = openai.OpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
 
         api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         for msg in messages:
@@ -200,7 +210,7 @@ async def async_stream_llm_chat(messages: list[dict]):
         return
 
     try:
-        client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url + "/v1")
+        client = openai.AsyncOpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
 
         api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         for msg in messages:

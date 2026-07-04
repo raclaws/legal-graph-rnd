@@ -97,6 +97,47 @@ def _build_definition_context(keywords: list[str]) -> str:
     return context
 
 
+def _try_parse_json(full_text: str) -> dict | None:
+    """Try multiple strategies to extract valid JSON from LLM output."""
+    raw = full_text.strip()
+
+    # Strip markdown code fences
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+        if raw.endswith("```"):
+            raw = raw[:-3]
+        raw = raw.strip()
+
+    # Direct parse
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Find first { ... last } (LLM sometimes wraps with text)
+    first_brace = raw.find("{")
+    last_brace = raw.rfind("}")
+    if first_brace != -1 and last_brace > first_brace:
+        try:
+            return json.loads(raw[first_brace:last_brace + 1])
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    return None
+
+
+def _extract_analisis_fallback(full_text: str) -> str:
+    """Extract analisis text from raw response when JSON parse fails."""
+    analisis_key = '"analisis": "'
+    idx = full_text.find(analisis_key)
+    if idx != -1:
+        start = idx + len(analisis_key)
+        chunk = _extract_analisis_chunk(full_text[start:])
+        if chunk:
+            return chunk
+    return "Tidak dapat memproses. Coba lagi."
+
+
 def _extract_analisis_chunk(buffer: str) -> str:
     """Extract readable text from partial analisis JSON value.
 
@@ -414,18 +455,8 @@ async def chat_stream(req: ChatRequest):
             yield "data: [DONE]\n\n"
             return
 
-        # Parse complete response
-        raw = full_text.strip()
-        if raw.startswith("```"):
-            raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
-            if raw.endswith("```"):
-                raw = raw[:-3]
-            raw = raw.strip()
-
-        try:
-            parsed = json.loads(raw)
-        except (json.JSONDecodeError, ValueError):
-            parsed = None
+        # Parse complete response — robust JSON extraction
+        parsed = _try_parse_json(full_text)
 
         if parsed:
             _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
@@ -435,7 +466,9 @@ async def chat_stream(req: ChatRequest):
 
             yield f"data: {json.dumps({'type': 'complete', 'data': parsed, 'session_id': session_id})}\n\n"
         else:
-            yield f"data: {json.dumps({'type': 'complete', 'data': {'analisis': full_text or 'Tidak dapat memproses.', 'hukum': []}, 'session_id': session_id})}\n\n"
+            # Fallback: extract analisis text from raw stream if possible
+            analisis_text = _extract_analisis_fallback(full_text)
+            yield f"data: {json.dumps({'type': 'complete', 'data': {'analisis': analisis_text, 'hukum': []}, 'session_id': session_id})}\n\n"
 
         yield "data: [DONE]\n\n"
         _sessions[session_id].append({"role": "assistant", "content": full_text})
