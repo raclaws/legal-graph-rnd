@@ -19,7 +19,7 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from ..schemas import ChatRequest
-from ..services.llm import async_stream_llm_chat
+from ..services.llm import async_stream_llm_chat, get_llm_config, SYSTEM_PROMPT, _openai_base_url
 
 router = APIRouter()
 
@@ -59,7 +59,11 @@ class IncrementalParser:
 
     def feed(self, token: str) -> list[tuple[str, dict | str]]:
         self.events = []
-        self.buffer += token
+
+        if self.state == State.IN_ANALISIS_STRING:
+            self.analisis_buffer += token
+        else:
+            self.buffer += token
 
         if self.state == State.SCANNING:
             self._scan()
@@ -193,9 +197,34 @@ class IncrementalParser:
             self.last_analisis_len = len(full)
 
 
+async def _stream_llm(messages: list[dict]):
+    """Stream LLM tokens without swallowing errors."""
+    import openai
+
+    api_key, base_url, model = get_llm_config()
+    if not api_key:
+        raise RuntimeError("No API key configured")
+
+    client = openai.AsyncOpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
+
+    api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for msg in messages:
+        api_messages.append({"role": msg["role"], "content": msg["content"]})
+
+    stream = await client.chat.completions.create(
+        model=model,
+        max_tokens=2048,
+        messages=api_messages,
+        stream=True,
+    )
+
+    async for chunk in stream:
+        if chunk.choices and chunk.choices[0].delta.content:
+            yield chunk.choices[0].delta.content
+
+
 @router.post("/chat/stream-v2")
 async def chat_stream_v2(req: ChatRequest):
-    from ..services.llm import SYSTEM_PROMPT
     from ..services.graph import search_definitions
 
     session_id = req.session_id or str(uuid.uuid4())
@@ -209,7 +238,7 @@ async def chat_stream_v2(req: ChatRequest):
         token_count = 0
 
         try:
-            async for token in async_stream_llm_chat(messages):
+            async for token in _stream_llm(messages):
                 token_count += 1
                 if token_count == 1:
                     yield _sse("status", {"text": "Menganalisis..."})
@@ -218,10 +247,13 @@ async def chat_stream_v2(req: ChatRequest):
                 for event_type, data in events:
                     yield _sse(event_type, data)
 
-        except Exception:
-            yield _sse("error", {"text": "Tidak dapat memproses."})
+        except Exception as e:
+            yield _sse("error", {"text": f"LLM error: {type(e).__name__}: {e}"})
             yield "data: [DONE]\n\n"
             return
+
+        if token_count == 0:
+            yield _sse("error", {"text": "No tokens received from LLM"})
 
         yield _sse("done", {"session_id": session_id})
         yield "data: [DONE]\n\n"
