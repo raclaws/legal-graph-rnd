@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import type { PerluDikonfirmasiItem } from '../types'
+import type { PerluDikonfirmasiItem, ActionItem } from '../types'
 import { sendMessageWithFile } from '../api'
 import Markdown from '../components/shared/Markdown'
 import ChatMessage from '../components/chat/ChatMessage'
@@ -10,6 +10,7 @@ interface HukumCard {
   description: string
   legal_basis: string
   severity: string
+  doc_evidence?: string
 }
 
 interface Message {
@@ -18,6 +19,11 @@ interface Message {
   hukum?: HukumCard[]
   analisis?: string
   perlu?: PerluDikonfirmasiItem[]
+  actions?: ActionItem[]
+  response_type?: 'chat' | 'compliance_report'
+  compliance_score?: number
+  compliance_doc_type?: string
+  compliance_summary?: { compliant: number; violated: number; not_evaluated: number }
 }
 
 function formatPasal(nodeId: string): string {
@@ -272,6 +278,11 @@ export default function ChatLab() {
           hukum: response.hukum,
           analisis: response.analisis?.text || '',
           perlu: response.perlu_dikonfirmasi,
+          actions: response.actions,
+          response_type: response.response_type,
+          compliance_score: response.compliance_score,
+          compliance_doc_type: response.compliance_doc_type,
+          compliance_summary: response.compliance_summary,
         }])
       } catch {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Gagal upload. Coba lagi.' }])
@@ -404,12 +415,128 @@ export default function ChatLab() {
                     setTimeout(() => handleSend(msg.content), 0)
                   }}
                 />
+              ) : msg.response_type === 'compliance_report' ? (
+                <div className="space-y-3">
+                  {/* Compliance score header */}
+                  {msg.compliance_score !== undefined && (
+                    <div className={`flex items-center gap-3 rounded-lg border p-3 ${msg.compliance_score >= 80 ? 'text-green-700 bg-green-100 border-green-300' : msg.compliance_score >= 50 ? 'text-amber-700 bg-amber-100 border-amber-300' : 'text-red-700 bg-red-100 border-red-300'}`}>
+                      <div className={`flex items-center justify-center w-12 h-12 rounded-full ring-2 bg-white ${msg.compliance_score >= 80 ? 'ring-green-400' : msg.compliance_score >= 50 ? 'ring-amber-400' : 'ring-red-400'}`}>
+                        <span className="text-lg font-bold">{msg.compliance_score}%</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-wide">{(msg.compliance_doc_type || '').replace('_', ' ')}</p>
+                        {msg.compliance_summary && (
+                          <p className="text-xs opacity-80">{msg.compliance_summary.compliant} sesuai · {msg.compliance_summary.violated} pelanggaran · {msg.compliance_summary.not_evaluated} tidak dievaluasi</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Violations */}
+                  {(() => {
+                    const violations = (msg.hukum || []).filter(h => h.severity === 'critical' || h.severity === 'high' || h.doc_evidence)
+                    if (violations.length === 0) return null
+                    return (
+                      <div className="border-l-4 border-red-400 bg-red-50 rounded-r-lg p-4">
+                        <h4 className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-2">Pelanggaran</h4>
+                        <ul className="space-y-2">
+                          {violations.map((v, vi) => (
+                            <li key={vi} className="flex items-start gap-2">
+                              <span className="shrink-0 mt-0.5">{v.severity === 'critical' ? '🚨' : '❌'}</span>
+                              <div className="min-w-0">
+                                <p className="text-sm text-gray-800 font-medium">{v.description}</p>
+                                {v.doc_evidence && <p className="text-xs text-red-600 mt-0.5">{v.doc_evidence}</p>}
+                                {v.legal_basis && (
+                                  <button onClick={() => handleCitationClick(v.legal_basis)} className="text-[10px] text-red-500 hover:underline mt-0.5">
+                                    {formatPasal(v.legal_basis)}
+                                  </button>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  })()}
+
+                  {/* Actions */}
+                  {msg.actions && msg.actions.length > 0 && (
+                    <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4">
+                      <h4 className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-2">Yang Perlu Diperbaiki</h4>
+                      <ul className="space-y-1.5">
+                        {msg.actions.map((action, ai) => (
+                          <li key={ai} className="flex items-start gap-2 text-sm">
+                            <span className="text-orange-500 shrink-0">•</span>
+                            <div>
+                              <span className="text-gray-700">{action.description}</span>
+                              {action.legal_basis && (
+                                <button onClick={() => handleCitationClick(action.legal_basis)} className="ml-1.5 text-[10px] text-orange-600 hover:underline">
+                                  {formatPasal(action.legal_basis)}
+                                </button>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Not evaluated */}
+                  {msg.compliance_summary && msg.compliance_summary.not_evaluated > 0 && msg.analisis && (
+                    <details className="group">
+                      <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+                        ❓ {msg.compliance_summary.not_evaluated} item tidak dapat dievaluasi
+                      </summary>
+                      <div className="mt-2 pl-4 text-xs text-gray-600 whitespace-pre-line">
+                        {msg.analisis.split('\n').filter(l => l.startsWith('•')).join('\n')}
+                      </div>
+                    </details>
+                  )}
+
+                  {/* Compliant (collapsed) */}
+                  {(() => {
+                    const compliant = (msg.hukum || []).filter(h => h.severity === 'low' && !h.doc_evidence)
+                    if (compliant.length === 0) return null
+                    return (
+                      <details className="group">
+                        <summary className="text-xs text-green-600 cursor-pointer hover:text-green-800">
+                          ✅ {compliant.length} item sesuai ketentuan
+                        </summary>
+                        <ul className="mt-2 pl-4 space-y-0.5">
+                          {compliant.map((c, ci) => (
+                            <li key={ci} className="text-xs text-gray-600">• {c.description}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    )
+                  })()}
+                </div>
               ) : msg.analisis ? (
                 <div className="space-y-3">
                   <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
                     <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
                     <AnalisisWithCitations text={msg.analisis} hukumCards={msg.hukum || []} loading={false} onCitationClick={handleCitationClick} />
                   </div>
+                  {msg.actions && msg.actions.length > 0 && (
+                    <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4">
+                      <h4 className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-2">Yang Perlu Diperbaiki</h4>
+                      <ul className="space-y-1.5">
+                        {msg.actions.map((action, ai) => (
+                          <li key={ai} className="flex items-start gap-2 text-sm">
+                            <span className="text-orange-500 shrink-0">•</span>
+                            <div>
+                              <span className="text-gray-700">{action.description}</span>
+                              {action.legal_basis && (
+                                <button onClick={() => handleCitationClick(action.legal_basis)} className="ml-1.5 text-[10px] text-orange-600 hover:underline">
+                                  {formatPasal(action.legal_basis)}
+                                </button>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   {msg.perlu && msg.perlu.length > 0 && (
                     <PerluSection items={msg.perlu} onSubmit={handleSend} />
                   )}

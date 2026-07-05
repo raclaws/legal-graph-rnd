@@ -236,16 +236,24 @@ async def chat_stream_v2(req: ChatRequest):
 
         parser = IncrementalParser()
         token_count = 0
+        buffered_perlu = []
+        full_text = ""
+
+        _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
 
         try:
             async for token in _stream_llm(messages):
                 token_count += 1
+                full_text += token
                 if token_count == 1:
                     yield _sse("status", {"text": "Menganalisis..."})
 
                 events = parser.feed(token)
                 for event_type, data in events:
-                    yield _sse(event_type, data)
+                    if event_type == "perlu_item":
+                        buffered_perlu.append(data)
+                    else:
+                        yield _sse(event_type, data)
 
         except Exception as e:
             yield _sse("error", {"text": f"LLM error: {type(e).__name__}: {e}"})
@@ -254,6 +262,20 @@ async def chat_stream_v2(req: ChatRequest):
 
         if token_count == 0:
             yield _sse("error", {"text": "No tokens received from LLM"})
+
+        # Gate perlu_dikonfirmasi by intent (only severance_calc and ump_check)
+        intent = ""
+        intent_match = full_text.find('"intent"')
+        if intent_match != -1:
+            after = full_text[intent_match:]
+            import re
+            m = re.search(r'"intent"\s*:\s*"([^"]*)"', after)
+            if m:
+                intent = m.group(1)
+
+        if intent in _INTENTS_THAT_NEED_INPUT and buffered_perlu:
+            for item in buffered_perlu:
+                yield _sse("perlu_item", item)
 
         yield _sse("done", {"session_id": session_id})
         yield "data: [DONE]\n\n"
