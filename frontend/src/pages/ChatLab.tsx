@@ -1,11 +1,23 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import type { PerluDikonfirmasiItem } from '../types'
+import { sendMessageWithFile } from '../api'
 import Markdown from '../components/shared/Markdown'
+import ChatMessage from '../components/chat/ChatMessage'
+import ChatInput from '../components/chat/ChatInput'
+import ProvisionPanel from '../components/shared/ProvisionPanel'
 
 interface HukumCard {
   description: string
   legal_basis: string
   severity: string
+}
+
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+  hukum?: HukumCard[]
+  analisis?: string
+  perlu?: PerluDikonfirmasiItem[]
 }
 
 function formatPasal(nodeId: string): string {
@@ -27,7 +39,7 @@ function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
   text: string
   hukumCards: HukumCard[]
   loading: boolean
-  onCitationClick: (idx: number) => void
+  onCitationClick: (nodeId: string, idx: number) => void
 }) {
   const segments = text.split(/\[(\d+)\]/)
 
@@ -40,7 +52,7 @@ function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
           return (
             <sup
               key={i}
-              onClick={() => onCitationClick(idx)}
+              onClick={() => card?.legal_basis && onCitationClick(card.legal_basis, idx)}
               className={`font-semibold text-[9px] ml-0.5 ${card?.legal_basis ? 'text-blue-600 cursor-pointer hover:text-blue-800' : 'text-gray-400'}`}
               title={card ? formatPasal(card.legal_basis) : ''}
             >
@@ -55,7 +67,108 @@ function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
   )
 }
 
-function HukumSidebarLab({ cards, focusedIndex }: { cards: HukumCard[]; focusedIndex: number | null }) {
+function PerluSection({ items, onSubmit }: { items: PerluDikonfirmasiItem[]; onSubmit: (answers: string) => void }) {
+  const [values, setValues] = useState<Record<string, string>>({})
+  const [submitted, setSubmitted] = useState(false)
+
+  function setValue(key: string, val: string) {
+    setValues(prev => ({ ...prev, [key]: val }))
+  }
+
+  function handleSubmit() {
+    const parts = items
+      .map(q => {
+        const key = q.parameter_key || q.question
+        const val = values[key]
+        if (!val) return null
+        return `${q.question} → ${val}`
+      })
+      .filter(Boolean)
+
+    if (parts.length === 0) return
+    onSubmit(parts.join('\n'))
+    setSubmitted(true)
+  }
+
+  if (submitted) {
+    return (
+      <div className="border-l-4 border-green-400 bg-green-50 rounded-r-lg p-3">
+        <p className="text-xs text-green-700">Jawaban terkirim, menunggu analisis...</p>
+      </div>
+    )
+  }
+
+  const filledCount = items.filter(q => values[q.parameter_key || q.question]?.trim()).length
+
+  return (
+    <div className="border-l-4 border-violet-400 bg-violet-50 rounded-r-lg p-4">
+      <h4 className="text-xs font-semibold text-violet-700 uppercase tracking-wide mb-3">Perlu Dikonfirmasi</h4>
+      <div className="space-y-3">
+        {items.map((q, i) => {
+          const key = q.parameter_key || q.question
+          return (
+            <div key={i} className="bg-white rounded border border-violet-100 p-3">
+              <p className="text-sm font-medium text-gray-700">{q.question}</p>
+              {q.why && <p className="text-xs text-gray-500 mt-0.5 mb-2">{q.why}</p>}
+
+              {q.type === 'select' && q.options ? (
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {q.options.map((opt, j) => (
+                    <button
+                      key={j}
+                      onClick={() => setValue(key, opt)}
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${values[key] === opt ? 'border-violet-500 bg-violet-100 text-violet-700 font-medium' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              ) : q.type === 'number' ? (
+                <input
+                  type="number"
+                  value={values[key] || ''}
+                  onChange={e => setValue(key, e.target.value)}
+                  placeholder="0"
+                  className="mt-1 rounded border border-gray-300 px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-violet-400"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={values[key] || ''}
+                  onChange={e => setValue(key, e.target.value)}
+                  placeholder="Ketik jawaban..."
+                  className="mt-1 rounded border border-gray-300 px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-violet-400"
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={handleSubmit}
+          disabled={filledCount === 0}
+          className="rounded bg-violet-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-30"
+        >
+          Kirim ({filledCount}/{items.length})
+        </button>
+        <button
+          onClick={() => setValues({})}
+          className="rounded border border-gray-300 px-4 py-1.5 text-xs text-gray-600 hover:bg-gray-100"
+        >
+          Batal
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function HukumSidebarLab({ cards, focusedIndex, onCitationClick }: {
+  cards: HukumCard[]
+  focusedIndex: number | null
+  onCitationClick: (nodeId: string) => void
+}) {
   const refs = useRef<(HTMLLIElement | null)[]>([])
 
   useEffect(() => {
@@ -67,7 +180,7 @@ function HukumSidebarLab({ cards, focusedIndex }: { cards: HukumCard[]; focusedI
   if (cards.length === 0) return null
 
   return (
-    <aside className="hidden md:block fixed top-[57px] right-0 w-80 h-[calc(100vh-57px)] border-l border-gray-200 bg-white overflow-y-auto z-40">
+    <aside className="fixed top-[57px] right-0 w-80 h-[calc(100vh-57px)] border-l border-gray-200 bg-white overflow-y-auto z-40">
       <div className="px-4 py-3 border-b border-gray-100 sticky top-0 bg-white">
         <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Dasar Hukum</h3>
         <p className="text-[10px] text-gray-400 mt-0.5">{cards.length} ketentuan</p>
@@ -77,7 +190,8 @@ function HukumSidebarLab({ cards, focusedIndex }: { cards: HukumCard[]; focusedI
           <li
             key={i}
             ref={el => { refs.current[i] = el }}
-            className={`px-4 py-3 transition-colors animate-[fadeSlideIn_0.2s_ease-out] ${focusedIndex === i ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
+            onClick={() => card.legal_basis && onCitationClick(card.legal_basis)}
+            className={`px-4 py-3 transition-colors animate-[fadeSlideIn_0.2s_ease-out] ${card.legal_basis ? 'cursor-pointer' : ''} ${focusedIndex === i ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
           >
             <div className="flex items-start gap-2">
               <span className={`shrink-0 mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${severityBadge(card.severity)}`}>
@@ -93,40 +207,79 @@ function HukumSidebarLab({ cards, focusedIndex }: { cards: HukumCard[]; focusedI
 }
 
 export default function ChatLab() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [sessionId, setSessionId] = useState<string>()
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState('')
-  const [hukumCards, setHukumCards] = useState<HukumCard[]>([])
-  const [analisisText, setAnalisisText] = useState('')
-  const [perluItems, setPerluItems] = useState<PerluDikonfirmasiItem[]>([])
-  const [done, setDone] = useState(false)
+  const [streamingHukum, setStreamingHukum] = useState<HukumCard[]>([])
+  const [streamingAnalisis, setStreamingAnalisis] = useState('')
+  const [streamingPerlu, setStreamingPerlu] = useState<PerluDikonfirmasiItem[]>([])
   const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
+  const [panelNodeId, setPanelNodeId] = useState<string | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
+
+  const allHukum = useMemo(() => {
+    const items: HukumCard[] = []
+    const seen = new Set<string>()
+    for (const msg of messages) {
+      for (const h of (msg.hukum || [])) {
+        const key = `${h.legal_basis}||${h.description}`
+        if (!seen.has(key)) { seen.add(key); items.push(h) }
+      }
+    }
+    for (const h of streamingHukum) {
+      const key = `${h.legal_basis}||${h.description}`
+      if (!seen.has(key)) { seen.add(key); items.push(h) }
+    }
+    return items
+  }, [messages, streamingHukum])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [analisisText, perluItems])
+  }, [messages, streamingAnalisis, streamingPerlu])
 
-  const reset = useCallback(() => {
-    setHukumCards([])
-    setAnalisisText('')
-    setPerluItems([])
-    setDone(false)
-    setStatus('')
-    setFocusedHukum(null)
-  }, [])
-
-  function handleCitationClick(idx: number) {
-    setFocusedHukum(idx)
-    setTimeout(() => setFocusedHukum(null), 2000)
+  function handleCitationClick(nodeId: string, idx?: number) {
+    setPanelNodeId(nodeId)
+    if (idx !== undefined) {
+      setFocusedHukum(idx)
+      setTimeout(() => setFocusedHukum(null), 2000)
+    }
   }
 
-  async function handleSend(text?: string) {
+  async function handleSend(text: string, file?: File) {
     const message = text || input
     if (!message.trim() || loading) return
     setInput('')
     setLoading(true)
-    reset()
+    setStatus('')
+    setStreamingHukum([])
+    setStreamingAnalisis('')
+    setStreamingPerlu([])
+
+    const userContent = file ? `${message}\n\n📎 ${file.name}` : message
+    setMessages(prev => [...prev, { role: 'user', content: userContent }])
+
+    // File upload uses the non-streaming endpoint
+    if (file) {
+      try {
+        const res = await sendMessageWithFile(message, file, sessionId)
+        setSessionId(res.session_id)
+        const response = res.response
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: '',
+          hukum: response.hukum,
+          analisis: response.analisis?.text || '',
+          perlu: response.perlu_dikonfirmasi,
+        }])
+      } catch {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Gagal upload. Coba lagi.' }])
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
 
     try {
       const token = localStorage.getItem('auth_token')
@@ -136,11 +289,11 @@ export default function ChatLab() {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, session_id: sessionId }),
       })
 
       if (!res.ok) {
-        setStatus('Error: ' + res.status)
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Gagal memproses. Coba lagi.' }])
         setLoading(false)
         return
       }
@@ -150,6 +303,9 @@ export default function ChatLab() {
 
       const decoder = new TextDecoder()
       let buffer = ''
+      const collectedHukum: HukumCard[] = []
+      let collectedAnalisis = ''
+      const collectedPerlu: PerluDikonfirmasiItem[] = []
 
       while (true) {
         const { done: streamDone, value } = await reader.read()
@@ -169,44 +325,57 @@ export default function ChatLab() {
 
             switch (event.type) {
               case 'status':
-                setStatus(event.data?.text || event.delta || '')
+                setStatus(event.data?.text || '')
                 break
               case 'hukum_item':
-                setHukumCards(prev => [...prev, event.data])
+                collectedHukum.push(event.data)
+                setStreamingHukum([...collectedHukum])
                 setStatus('')
                 break
               case 'analisis_delta':
-                setAnalisisText(prev => prev + event.delta)
+                collectedAnalisis += event.delta
+                setStreamingAnalisis(collectedAnalisis)
                 setStatus('')
                 break
               case 'perlu_item':
-                setPerluItems(prev => [...prev, event.data])
+                collectedPerlu.push(event.data)
+                setStreamingPerlu([...collectedPerlu])
                 break
               case 'done':
-                setDone(true)
+                if (event.data?.session_id) setSessionId(event.data.session_id)
+                setMessages(prev => [...prev, {
+                  role: 'assistant',
+                  content: '',
+                  hukum: collectedHukum,
+                  analisis: collectedAnalisis,
+                  perlu: collectedPerlu,
+                }])
+                setStreamingHukum([])
+                setStreamingAnalisis('')
+                setStreamingPerlu([])
                 break
               case 'error':
-                setStatus('Error: ' + (event.data?.text || 'Unknown'))
+                setMessages(prev => [...prev, { role: 'assistant', content: event.data?.text || 'Error' }])
                 break
             }
           } catch { /* skip malformed */ }
         }
       }
     } catch {
-      setStatus('Connection failed')
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Tidak dapat terhubung ke server.' }])
     } finally {
       setLoading(false)
+      setStatus('')
     }
   }
 
-  const hasSidebar = hukumCards.length > 0
+  const hasSidebar = allHukum.length > 0
 
   return (
     <div className="flex flex-col h-[calc(100vh-57px)]">
-      <div className="flex-1 overflow-y-auto px-4 py-6" style={{ paddingRight: hasSidebar ? '21rem' : undefined }}>
-        <div className="max-w-3xl mx-auto space-y-3">
-          {/* Empty state */}
-          {!loading && !done && hukumCards.length === 0 && !analisisText && (
+      <div className="flex-1 overflow-y-auto px-4 py-6" style={{ paddingRight: hasSidebar && !panelNodeId ? '21rem' : panelNodeId ? '25rem' : undefined }}>
+        <div className="max-w-3xl mx-auto space-y-4">
+          {messages.length === 0 && !loading && (
             <div className="mt-20 text-center">
               <h1 className="text-2xl font-semibold text-gray-900 mb-2">Streaming Lab</h1>
               <p className="text-sm text-gray-500 mb-6">Progressive rendering — each section appears as it arrives</p>
@@ -224,8 +393,35 @@ export default function ChatLab() {
             </div>
           )}
 
-          {/* Status indicator */}
-          {status && (
+          {messages.map((msg, i) => (
+            <div key={i}>
+              {msg.role === 'user' ? (
+                <ChatMessage
+                  role="user"
+                  content={msg.content}
+                  onRetry={() => {
+                    setMessages(prev => prev.slice(0, i))
+                    setTimeout(() => handleSend(msg.content), 0)
+                  }}
+                />
+              ) : msg.analisis ? (
+                <div className="space-y-3">
+                  <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
+                    <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
+                    <AnalisisWithCitations text={msg.analisis} hukumCards={msg.hukum || []} loading={false} onCitationClick={handleCitationClick} />
+                  </div>
+                  {msg.perlu && msg.perlu.length > 0 && (
+                    <PerluSection items={msg.perlu} onSubmit={handleSend} />
+                  )}
+                </div>
+              ) : (
+                <ChatMessage role="assistant" content={msg.content} />
+              )}
+            </div>
+          ))}
+
+          {/* Streaming state */}
+          {loading && status && (
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div className="flex gap-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
@@ -236,75 +432,33 @@ export default function ChatLab() {
             </div>
           )}
 
-          {/* Analisis — streams in real-time with superscript citations */}
-          {analisisText && (
-            <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4 animate-[fadeSlideIn_0.2s_ease-out]">
+          {loading && streamingAnalisis && (
+            <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
               <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
-              <AnalisisWithCitations text={analisisText} hukumCards={hukumCards} loading={loading} onCitationClick={handleCitationClick} />
+              <AnalisisWithCitations text={streamingAnalisis} hukumCards={streamingHukum} loading={true} onCitationClick={handleCitationClick} />
             </div>
           )}
 
-          {/* Perlu dikonfirmasi — slides in at the end */}
-          {perluItems.length > 0 && (
-            <div className="border-l-4 border-violet-400 bg-violet-50 rounded-r-lg p-4 animate-[fadeSlideIn_0.2s_ease-out]">
-              <h4 className="text-[10px] font-semibold text-violet-700 uppercase tracking-wide mb-2">Perlu Dikonfirmasi</h4>
-              <div className="space-y-2">
-                {perluItems.map((q, i) => (
-                  <div key={i} className="bg-white rounded border border-violet-100 p-3">
-                    <p className="text-sm font-medium text-gray-700">{q.question}</p>
-                    {q.why && <p className="text-xs text-gray-500 mt-0.5">{q.why}</p>}
-                    {q.options && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {q.options.map((opt, j) => (
-                          <span key={j} className="rounded-full border border-violet-200 px-3 py-1 text-xs text-violet-700">
-                            {opt}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Done marker */}
-          {done && (
-            <p className="text-[10px] text-gray-400 text-center pt-2">Selesai</p>
+          {loading && streamingPerlu.length > 0 && (
+            <PerluSection items={streamingPerlu} onSubmit={handleSend} />
           )}
 
           <div ref={endRef} />
         </div>
       </div>
 
-      {/* Input */}
-      <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe" style={{ paddingRight: hasSidebar ? '21rem' : undefined }}>
+      {/* Input — with file attachment */}
+      <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe" style={{ paddingRight: hasSidebar && !panelNodeId ? '21rem' : panelNodeId ? '25rem' : undefined }}>
         <div className="max-w-3xl mx-auto">
-          <form
-            onSubmit={e => { e.preventDefault(); handleSend() }}
-            className="flex gap-2"
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Ketik pertanyaan..."
-              disabled={loading}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={loading || !input.trim()}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-40"
-            >
-              Kirim
-            </button>
-          </form>
+          <ChatInput onSend={handleSend} disabled={loading} />
         </div>
       </div>
 
       {/* Sidebar — hukum cards stream here */}
-      <HukumSidebarLab cards={hukumCards} focusedIndex={focusedHukum} />
+      <HukumSidebarLab cards={allHukum} focusedIndex={focusedHukum} onCitationClick={handleCitationClick} />
+
+      {/* Provision panel — opens when clicking sidebar card or superscript */}
+      <ProvisionPanel nodeId={panelNodeId} onClose={() => setPanelNodeId(null)} />
     </div>
   )
 }
