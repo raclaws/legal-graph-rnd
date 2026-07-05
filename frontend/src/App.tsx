@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Chat from './pages/Chat'
+import ChatLab from './pages/ChatLab'
 import Calculator from './pages/Calculator'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
@@ -39,6 +40,7 @@ export default function App() {
           <Link to="/" className="font-semibold text-gray-900">HR Compliance</Link>
           <nav className="flex gap-4 text-sm items-center">
             <Link to="/" className="text-gray-600 hover:text-gray-900">Chat</Link>
+            <Link to="/lab" className="text-gray-600 hover:text-gray-900">Lab</Link>
             <Link to="/calculator" className="text-gray-600 hover:text-gray-900">Pesangon</Link>
             <Link to="/settings" className="text-gray-600 hover:text-gray-900">Settings</Link>
             <button onClick={handleLogout} className="text-gray-400 hover:text-gray-700 text-xs ml-2">Keluar</button>
@@ -46,6 +48,7 @@ export default function App() {
         </header>
         <Routes>
           <Route path="/" element={<Chat />} />
+          <Route path="/lab" element={<ChatLab />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>

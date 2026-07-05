@@ -12,7 +12,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .routes import auth, calculator, chat, compliance, explain, provision, settings
+from .routes import auth, calculator, chat, chat_v2, compliance, explain, provision, settings
 
 
 @asynccontextmanager
@@ -52,6 +52,7 @@ async def auth_middleware(request: Request, call_next):
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
+app.include_router(chat_v2.router, prefix="/api")
 app.include_router(calculator.router, prefix="/api")
 app.include_router(provision.router, prefix="/api")
 app.include_router(compliance.router, prefix="/api")
