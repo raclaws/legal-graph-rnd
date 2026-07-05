@@ -31,6 +31,7 @@ class State(Enum):
     IN_HUKUM_ARRAY = auto()
     IN_ANALISIS_STRING = auto()
     IN_PERLU_ARRAY = auto()
+    IN_ACTIONS_ARRAY = auto()
     TAIL = auto()
 
 
@@ -75,6 +76,8 @@ class IncrementalParser:
             self._parse_string()
         elif self.state == State.IN_PERLU_ARRAY:
             self._parse_array("perlu_item")
+        elif self.state == State.IN_ACTIONS_ARRAY:
+            self._parse_array("action_item")
 
         return self.events
 
@@ -83,6 +86,7 @@ class IncrementalParser:
             ('"hukum"', State.IN_HUKUM_ARRAY),
             ('"analisis"', State.IN_ANALISIS_STRING),
             ('"perlu_dikonfirmasi"', State.IN_PERLU_ARRAY),
+            ('"actions"', State.IN_ACTIONS_ARRAY),
         ]
         for marker, next_state in markers:
             idx = self.buffer.find(marker)
@@ -116,7 +120,12 @@ class IncrementalParser:
                 self.buffer = after_colon[bracket_idx + 1:]
                 self.brace_depth = 0
                 self.item_buffer = ""
-                self._parse_array("hukum_item" if next_state == State.IN_HUKUM_ARRAY else "perlu_item")
+                event_name = {
+                    State.IN_HUKUM_ARRAY: "hukum_item",
+                    State.IN_PERLU_ARRAY: "perlu_item",
+                    State.IN_ACTIONS_ARRAY: "action_item",
+                }[next_state]
+                self._parse_array(event_name)
                 return
 
     def _parse_array(self, event_type: str):
@@ -228,6 +237,7 @@ async def _stream_llm(messages: list[dict]):
 @router.post("/chat/stream-v2")
 async def chat_stream_v2(req: ChatRequest):
     from ..services.graph import search_definitions
+    from .chat import _detect_conceptual_question, _build_definition_context
 
     session_id = req.session_id or str(uuid.uuid4())
 
@@ -235,7 +245,19 @@ async def chat_stream_v2(req: ChatRequest):
         _sessions[session_id] = []
 
     _sessions[session_id].append({"role": "user", "content": req.message})
+
+    # Inject definition context for conceptual questions
+    definition_context = ""
+    conceptual_keywords = _detect_conceptual_question(req.message)
+    if conceptual_keywords:
+        definition_context = _build_definition_context(conceptual_keywords)
+
     messages = _sessions[session_id][:]
+    if definition_context and messages:
+        messages[-1] = {
+            "role": "user",
+            "content": messages[-1]["content"] + definition_context,
+        }
 
     async def generate():
         yield _sse("status", {"text": "Memproses..."})

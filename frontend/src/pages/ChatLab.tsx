@@ -221,6 +221,7 @@ export default function ChatLab() {
   const [streamingHukum, setStreamingHukum] = useState<HukumCard[]>([])
   const [streamingAnalisis, setStreamingAnalisis] = useState('')
   const [streamingPerlu, setStreamingPerlu] = useState<PerluDikonfirmasiItem[]>([])
+  const [streamingActions, setStreamingActions] = useState<ActionItem[]>([])
   const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
   const [panelNodeId, setPanelNodeId] = useState<string | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
@@ -262,6 +263,7 @@ export default function ChatLab() {
     setStreamingHukum([])
     setStreamingAnalisis('')
     setStreamingPerlu([])
+    setStreamingActions([])
 
     const userContent = file ? `${message}\n\n📎 ${file.name}` : message
     setMessages(prev => [...prev, { role: 'user', content: userContent }])
@@ -317,6 +319,7 @@ export default function ChatLab() {
       const collectedHukum: HukumCard[] = []
       let collectedAnalisis = ''
       const collectedPerlu: PerluDikonfirmasiItem[] = []
+      const collectedActions: ActionItem[] = []
 
       while (true) {
         const { done: streamDone, value } = await reader.read()
@@ -352,6 +355,10 @@ export default function ChatLab() {
                 collectedPerlu.push(event.data)
                 setStreamingPerlu([...collectedPerlu])
                 break
+              case 'action_item':
+                collectedActions.push(event.data)
+                setStreamingActions([...collectedActions])
+                break
               case 'done':
                 if (event.data?.session_id) setSessionId(event.data.session_id)
                 setMessages(prev => [...prev, {
@@ -360,6 +367,7 @@ export default function ChatLab() {
                   hukum: collectedHukum,
                   analisis: collectedAnalisis,
                   perlu: collectedPerlu,
+                  actions: collectedActions,
                 }])
                 setStreamingHukum([])
                 setStreamingAnalisis('')
@@ -568,6 +576,27 @@ export default function ChatLab() {
 
           {loading && streamingPerlu.length > 0 && (
             <PerluSection items={streamingPerlu} onSubmit={handleSend} />
+          )}
+
+          {loading && streamingActions.length > 0 && (
+            <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4">
+              <h4 className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-2">Yang Perlu Diperbaiki</h4>
+              <ul className="space-y-1.5">
+                {streamingActions.map((action, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <span className="text-orange-500 shrink-0">•</span>
+                    <div>
+                      <span className="text-gray-700">{action.description}</span>
+                      {action.legal_basis && (
+                        <button onClick={() => handleCitationClick(action.legal_basis)} className="ml-1.5 text-[10px] text-orange-600 hover:underline">
+                          {formatPasal(action.legal_basis)}
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           <div ref={endRef} />
