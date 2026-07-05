@@ -23,6 +23,8 @@ from ..services.llm import async_stream_llm_chat, get_llm_config, SYSTEM_PROMPT,
 
 router = APIRouter()
 
+_sessions: dict[str, list[dict]] = {}
+
 
 class State(Enum):
     SCANNING = auto()
@@ -229,7 +231,11 @@ async def chat_stream_v2(req: ChatRequest):
 
     session_id = req.session_id or str(uuid.uuid4())
 
-    messages = [{"role": "user", "content": req.message}]
+    if session_id not in _sessions:
+        _sessions[session_id] = []
+
+    _sessions[session_id].append({"role": "user", "content": req.message})
+    messages = _sessions[session_id][:]
 
     async def generate():
         yield _sse("status", {"text": "Memproses..."})
@@ -276,6 +282,8 @@ async def chat_stream_v2(req: ChatRequest):
         if intent in _INTENTS_THAT_NEED_INPUT and buffered_perlu:
             for item in buffered_perlu:
                 yield _sse("perlu_item", item)
+
+        _sessions[session_id].append({"role": "assistant", "content": full_text})
 
         yield _sse("done", {"session_id": session_id})
         yield "data: [DONE]\n\n"
