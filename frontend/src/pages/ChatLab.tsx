@@ -14,15 +14,6 @@ function formatPasal(nodeId: string): string {
   return nodeId
 }
 
-function severityColor(s: string) {
-  switch (s) {
-    case 'critical': return 'border-red-400 bg-red-50'
-    case 'high': return 'border-orange-400 bg-orange-50'
-    case 'medium': return 'border-yellow-400 bg-yellow-50'
-    default: return 'border-blue-400 bg-blue-50'
-  }
-}
-
 function severityBadge(s: string) {
   switch (s) {
     case 'critical': return 'bg-red-100 text-red-800'
@@ -30,6 +21,75 @@ function severityBadge(s: string) {
     case 'medium': return 'bg-yellow-100 text-yellow-800'
     default: return 'bg-blue-100 text-blue-700'
   }
+}
+
+function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
+  text: string
+  hukumCards: HukumCard[]
+  loading: boolean
+  onCitationClick: (idx: number) => void
+}) {
+  const segments = text.split(/\[(\d+)\]/)
+
+  return (
+    <div className="text-sm text-gray-700 whitespace-pre-line">
+      {segments.map((seg, i) => {
+        if (i % 2 === 1) {
+          const idx = parseInt(seg, 10) - 1
+          const card = hukumCards[idx]
+          return (
+            <sup
+              key={i}
+              onClick={() => onCitationClick(idx)}
+              className={`font-semibold text-[9px] ml-0.5 ${card?.legal_basis ? 'text-blue-600 cursor-pointer hover:text-blue-800' : 'text-gray-400'}`}
+              title={card ? formatPasal(card.legal_basis) : ''}
+            >
+              {seg}
+            </sup>
+          )
+        }
+        return <span key={i}><Markdown text={seg} /></span>
+      })}
+      {loading && <span className="inline-block w-0.5 h-4 bg-amber-600 animate-pulse ml-0.5 align-text-bottom" />}
+    </div>
+  )
+}
+
+function HukumSidebarLab({ cards, focusedIndex }: { cards: HukumCard[]; focusedIndex: number | null }) {
+  const refs = useRef<(HTMLLIElement | null)[]>([])
+
+  useEffect(() => {
+    if (focusedIndex !== null && refs.current[focusedIndex]) {
+      refs.current[focusedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [focusedIndex])
+
+  if (cards.length === 0) return null
+
+  return (
+    <aside className="hidden md:block fixed top-[57px] right-0 w-80 h-[calc(100vh-57px)] border-l border-gray-200 bg-white overflow-y-auto z-40">
+      <div className="px-4 py-3 border-b border-gray-100 sticky top-0 bg-white">
+        <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Dasar Hukum</h3>
+        <p className="text-[10px] text-gray-400 mt-0.5">{cards.length} ketentuan</p>
+      </div>
+      <ul className="divide-y divide-gray-100">
+        {cards.map((card, i) => (
+          <li
+            key={i}
+            ref={el => { refs.current[i] = el }}
+            className={`px-4 py-3 transition-colors animate-[fadeSlideIn_0.2s_ease-out] ${focusedIndex === i ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
+          >
+            <div className="flex items-start gap-2">
+              <span className={`shrink-0 mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${severityBadge(card.severity)}`}>
+                {card.legal_basis ? formatPasal(card.legal_basis) : card.severity}
+              </span>
+              <p className="text-xs text-gray-700 leading-relaxed">{card.description}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
 }
 
 export default function ChatLab() {
@@ -40,11 +100,12 @@ export default function ChatLab() {
   const [analisisText, setAnalisisText] = useState('')
   const [perluItems, setPerluItems] = useState<PerluDikonfirmasiItem[]>([])
   const [done, setDone] = useState(false)
+  const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [hukumCards, analisisText, perluItems])
+  }, [analisisText, perluItems])
 
   const reset = useCallback(() => {
     setHukumCards([])
@@ -52,7 +113,13 @@ export default function ChatLab() {
     setPerluItems([])
     setDone(false)
     setStatus('')
+    setFocusedHukum(null)
   }, [])
+
+  function handleCitationClick(idx: number) {
+    setFocusedHukum(idx)
+    setTimeout(() => setFocusedHukum(null), 2000)
+  }
 
   async function handleSend(text?: string) {
     const message = text || input
@@ -132,9 +199,11 @@ export default function ChatLab() {
     }
   }
 
+  const hasSidebar = hukumCards.length > 0
+
   return (
     <div className="flex flex-col h-[calc(100vh-57px)]">
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 overflow-y-auto px-4 py-6" style={{ paddingRight: hasSidebar ? '21rem' : undefined }}>
         <div className="max-w-3xl mx-auto space-y-3">
           {/* Empty state */}
           {!loading && !done && hukumCards.length === 0 && !analisisText && (
@@ -167,34 +236,11 @@ export default function ChatLab() {
             </div>
           )}
 
-          {/* Hukum cards — appear one by one */}
-          {hukumCards.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Dasar Hukum</h4>
-              {hukumCards.map((card, i) => (
-                <div
-                  key={i}
-                  className={`border-l-4 rounded-r-lg p-3 animate-[fadeSlideIn_0.2s_ease-out] ${severityColor(card.severity)}`}
-                >
-                  <div className="flex items-start gap-2">
-                    <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${severityBadge(card.severity)}`}>
-                      {card.legal_basis ? formatPasal(card.legal_basis) : card.severity}
-                    </span>
-                    <p className="text-sm text-gray-700">{card.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Analisis — streams in real-time */}
+          {/* Analisis — streams in real-time with superscript citations */}
           {analisisText && (
             <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4 animate-[fadeSlideIn_0.2s_ease-out]">
               <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
-              <div className="text-sm text-gray-700 whitespace-pre-line">
-                <Markdown text={analisisText} />
-                {loading && <span className="inline-block w-0.5 h-4 bg-amber-600 animate-pulse ml-0.5 align-text-bottom" />}
-              </div>
+              <AnalisisWithCitations text={analisisText} hukumCards={hukumCards} loading={loading} onCitationClick={handleCitationClick} />
             </div>
           )}
 
@@ -232,7 +278,7 @@ export default function ChatLab() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe">
+      <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe" style={{ paddingRight: hasSidebar ? '21rem' : undefined }}>
         <div className="max-w-3xl mx-auto">
           <form
             onSubmit={e => { e.preventDefault(); handleSend() }}
@@ -256,6 +302,9 @@ export default function ChatLab() {
           </form>
         </div>
       </div>
+
+      {/* Sidebar — hukum cards stream here */}
+      <HukumSidebarLab cards={hukumCards} focusedIndex={focusedHukum} />
     </div>
   )
 }
