@@ -96,35 +96,27 @@ KNOWLEDGE (from graph — 17 regulations):
 
 
 def call_llm_chat(messages: list[dict]) -> dict | None:
-    import anthropic
+    import openai
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
         return None
 
     try:
-        client = anthropic.Anthropic(api_key=api_key, base_url=base_url)
+        client = openai.OpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
 
-        api_messages = [{"role": "user", "content": f"{SYSTEM_PROMPT}\n\n{messages[0]['content']}"}]
-        for msg in messages[1:]:
+        api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for msg in messages:
             api_messages.append({"role": msg["role"], "content": msg["content"]})
 
-        response = client.messages.create(
+        response = client.chat.completions.create(
             model=model,
             max_tokens=2048,
             timeout=120.0,
             messages=api_messages,
         )
 
-        raw = None
-        if response.content:
-            raw = response.content[0].text
-        else:
-            d = response.to_dict() if hasattr(response, 'to_dict') else {}
-            choices = d.get('choices')
-            if choices:
-                raw = choices[0]['message']['content']
-
+        raw = response.choices[0].message.content if response.choices else None
         if not raw:
             return None
 
@@ -141,27 +133,23 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
 
 
 def call_llm_simple(prompt: str) -> str | None:
-    import anthropic
+    import openai
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
         return None
 
     try:
-        client = anthropic.Anthropic(api_key=api_key, base_url=base_url)
-        response = client.messages.create(
+        client = openai.OpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
+        response = client.chat.completions.create(
             model=model,
             max_tokens=4096,
             timeout=120.0,
             messages=[{"role": "user", "content": prompt}],
         )
 
-        if response.content:
-            return response.content[0].text
-        d = response.to_dict() if hasattr(response, 'to_dict') else {}
-        choices = d.get('choices')
-        if choices:
-            return choices[0]['message']['content']
+        if response.choices:
+            return response.choices[0].message.content
         return None
     except Exception:
         return None
