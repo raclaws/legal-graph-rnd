@@ -1,10 +1,13 @@
-"""LLM service — Anthropic client wrapper."""
+"""LLM service — OpenAI-compatible client wrapper."""
 
 from __future__ import annotations
 
 import json
+import logging
 import os
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent
 SETTINGS_PATH = _PROJECT_ROOT / "data" / ".settings.json"
@@ -100,6 +103,7 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
+        logger.warning("call_llm_chat: no API key configured")
         return None
 
     try:
@@ -118,6 +122,7 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
 
         raw = response.choices[0].message.content if response.choices else None
         if not raw:
+            logger.warning("call_llm_chat: empty response from LLM")
             return None
 
         raw = raw.strip()
@@ -128,7 +133,11 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
             raw = raw.strip()
 
         return json.loads(raw)
-    except (json.JSONDecodeError, Exception):
+    except json.JSONDecodeError as e:
+        logger.error("call_llm_chat: JSON parse failed: %s", e)
+        return None
+    except Exception as e:
+        logger.error("call_llm_chat: %s: %s", type(e).__name__, e)
         return None
 
 
@@ -137,6 +146,7 @@ def call_llm_simple(prompt: str) -> str | None:
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
+        logger.warning("call_llm_simple: no API key configured")
         return None
 
     try:
@@ -150,8 +160,10 @@ def call_llm_simple(prompt: str) -> str | None:
 
         if response.choices:
             return response.choices[0].message.content
+        logger.warning("call_llm_simple: empty response from LLM")
         return None
-    except Exception:
+    except Exception as e:
+        logger.error("call_llm_simple: %s: %s", type(e).__name__, e)
         return None
 
 
