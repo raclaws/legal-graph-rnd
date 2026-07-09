@@ -417,8 +417,11 @@ def get_obligations_for_doc_type(doc_type: DocType) -> list[Obligation]:
     """Load obligations for a doc type. Engine-first, graph, then Python fallback."""
 
     # Try YAML engine
-    registry = _get_engine_registry()
-    engine_obs = registry.get_obligations(doc_type.value)
+    try:
+        registry = _get_engine_registry()
+        engine_obs = registry.get_obligations(doc_type.value)
+    except (ImportError, ModuleNotFoundError):
+        engine_obs = None
     if engine_obs:
         # Adapt engine Obligation to pipeline Obligation (same interface)
         from src.compliance.engine.types import Obligation as EngOb
