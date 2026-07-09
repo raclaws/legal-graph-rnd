@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
 
+function authHeaders(): Record<string, string> {
+  const token = localStorage.getItem('auth_token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 export default function Settings() {
   const [model, setModel] = useState('')
   const [baseUrl, setBaseUrl] = useState('')
@@ -9,13 +14,13 @@ export default function Settings() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    fetch('/api/settings')
+    fetch('/api/settings', { headers: authHeaders() })
       .then(r => r.json())
       .then(data => {
         setModel(data.model || '')
         setBaseUrl(data.base_url || '')
       })
-    fetch('/api/settings/models')
+    fetch('/api/settings/models', { headers: authHeaders() })
       .then(r => r.json())
       .then(data => setModels(data.models || []))
       .finally(() => setLoadingModels(false))
@@ -26,7 +31,7 @@ export default function Settings() {
     setSaved(false)
     const res = await fetch('/api/settings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ model, base_url: baseUrl }),
     })
     if (res.ok) {
@@ -41,7 +46,7 @@ export default function Settings() {
 
   function refreshModels() {
     setLoadingModels(true)
-    fetch('/api/settings/models')
+    fetch('/api/settings/models', { headers: authHeaders() })
       .then(r => r.json())
       .then(data => setModels(data.models || []))
       .finally(() => setLoadingModels(false))
