@@ -1,6 +1,5 @@
-import { LogtoProvider, useLogto, useHandleSignInCallback } from '@logto/react'
-import type { LogtoConfig } from '@logto/react'
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import Chat from './pages/Chat'
 import ChatLab from './pages/ChatLab'
@@ -9,27 +8,16 @@ import Settings from './pages/Settings'
 import { setAccessTokenGetter } from './api'
 import './index.css'
 
-const logtoConfig: LogtoConfig = {
-  endpoint: 'https://i8a3uv.logto.app/',
-  appId: '78s9jpal807pel5bgj88k',
-}
-
-function Callback() {
-  const navigate = useNavigate()
-  const { isLoading } = useHandleSignInCallback(() => navigate('/'))
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen text-gray-500">Signing in...</div>
-  }
-  return null
-}
+const domain = import.meta.env.VITE_AUTH0_DOMAIN
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
+const audience = import.meta.env.VITE_AUTH0_AUDIENCE
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, signIn } = useLogto()
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      signIn(window.location.origin + '/callback')
+      loginWithRedirect()
     }
   }, [isLoading, isAuthenticated])
 
@@ -41,11 +29,11 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 }
 
 function AppShell() {
-  const { signOut, getAccessToken } = useLogto()
+  const { logout, getAccessTokenSilently } = useAuth0()
 
   useEffect(() => {
-    setAccessTokenGetter(() => getAccessToken())
-  }, [getAccessToken])
+    setAccessTokenGetter(() => getAccessTokenSilently({ authorizationParams: { audience } }))
+  }, [getAccessTokenSilently])
 
   return (
     <AuthGate>
@@ -57,7 +45,7 @@ function AppShell() {
             <Link to="/lab" className="text-gray-600 hover:text-gray-900">Lab</Link>
             <Link to="/calculator" className="text-gray-600 hover:text-gray-900">Pesangon</Link>
             <Link to="/settings" className="text-gray-600 hover:text-gray-900">Settings</Link>
-            <button onClick={() => signOut(window.location.origin)} className="text-gray-400 hover:text-gray-700 text-xs ml-2">Keluar</button>
+            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className="text-gray-400 hover:text-gray-700 text-xs ml-2">Keluar</button>
           </nav>
         </header>
         <Routes>
@@ -74,12 +62,18 @@ function AppShell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <LogtoProvider config={logtoConfig}>
+      <Auth0Provider
+        domain={domain}
+        clientId={clientId}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+          audience,
+        }}
+      >
         <Routes>
-          <Route path="/callback" element={<Callback />} />
           <Route path="/*" element={<AppShell />} />
         </Routes>
-      </LogtoProvider>
+      </Auth0Provider>
     </BrowserRouter>
   )
 }

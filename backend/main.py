@@ -82,8 +82,8 @@ async def auth_middleware(request: Request, call_next):
     if request.url.path in _PUBLIC_PATHS:
         return await call_next(request)
 
-    # Skip auth if no Logto endpoint configured (local dev without auth)
-    if not os.environ.get("LOGTO_ENDPOINT"):
+    # Skip auth if no Auth0 domain configured (local dev without auth)
+    if not os.environ.get("AUTH0_DOMAIN"):
         return await call_next(request)
 
     token = request.headers.get("Authorization", "")

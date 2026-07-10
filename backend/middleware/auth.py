@@ -1,4 +1,4 @@
-"""JWT auth middleware — validates Logto-issued access tokens."""
+"""JWT auth middleware — validates Auth0-issued access tokens."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from typing import Any
 import httpx
 import jwt
 
-LOGTO_ENDPOINT = os.environ.get("LOGTO_ENDPOINT", "https://i8a3uv.logto.app/")
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN", "")
+AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "")
 
 _jwks_cache: dict[str, Any] = {}
 _jwks_fetched_at: float = 0
@@ -22,16 +23,14 @@ def _get_jwks() -> dict[str, Any]:
     if _jwks_cache and (time.time() - _jwks_fetched_at) < JWKS_TTL:
         return _jwks_cache
 
-    endpoint = LOGTO_ENDPOINT.rstrip("/")
-    oidc_config = httpx.get(f"{endpoint}/oidc/.well-known/openid-configuration", timeout=10).json()
-    jwks_uri = oidc_config["jwks_uri"]
-    _jwks_cache = httpx.get(jwks_uri, timeout=10).json()
+    jwks_url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
+    _jwks_cache = httpx.get(jwks_url, timeout=10).json()
     _jwks_fetched_at = time.time()
     return _jwks_cache
 
 
 def validate_token(token: str) -> dict | None:
-    """Validate a Logto JWT. Returns decoded claims or None if invalid."""
+    """Validate an Auth0 JWT. Returns decoded claims or None if invalid."""
     try:
         jwks = _get_jwks()
         unverified_header = jwt.get_unverified_header(token)
@@ -46,14 +45,13 @@ def validate_token(token: str) -> dict | None:
         if not key:
             return None
 
-        endpoint = LOGTO_ENDPOINT.rstrip("/")
         claims = jwt.decode(
             token,
             key,
             algorithms=["RS256"],
-            issuer=f"{endpoint}/oidc",
+            issuer=f"https://{AUTH0_DOMAIN}/",
+            audience=AUTH0_AUDIENCE,
             options={"verify_aud": True},
-            audience=os.environ.get("LOGTO_APP_ID", "78s9jpal807pel5bgj88k"),
         )
         return claims
     except (jwt.InvalidTokenError, httpx.HTTPError, KeyError):
