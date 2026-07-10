@@ -52,7 +52,8 @@ def validate_token(token: str) -> dict | None:
             key,
             algorithms=["RS256"],
             issuer=f"{endpoint}/oidc",
-            options={"verify_aud": False},
+            options={"verify_aud": True},
+            audience=os.environ.get("LOGTO_APP_ID", "78s9jpal807pel5bgj88k"),
         )
         return claims
     except (jwt.InvalidTokenError, httpx.HTTPError, KeyError):
