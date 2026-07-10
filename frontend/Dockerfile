@@ -1,5 +1,9 @@
 FROM node:22-alpine AS build
 
+ARG VITE_AUTH0_DOMAIN
+ARG VITE_AUTH0_CLIENT_ID
+ARG VITE_AUTH0_AUDIENCE
+
 WORKDIR /app
 COPY package.json ./
 RUN npm install
