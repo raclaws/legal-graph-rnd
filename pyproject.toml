@@ -4,19 +4,19 @@ version = "0.1.0"
 description = "Indonesian Legal Knowledge Graph — structural parser and relationship graph"
 requires-python = ">=3.12"
 dependencies = [
-    "pymupdf>=1.24.0",
-    "jsonschema>=4.22.0",
-    "httpx>=0.27.0",
-    "beautifulsoup4>=4.12.0",
-    "lxml>=5.2.0",
-    "fastapi>=0.111.0",
-    "uvicorn[standard]>=0.30.0",
-    "python-multipart>=0.0.9",
-    "pydantic>=2.7.0",
-    "anthropic>=0.26.0",
-    "openai>=1.30.0",
-    "PyJWT[crypto]>=2.8.0",
-    "axiom-py>=0.12.0",
+    "pymupdf==1.28.0",
+    "jsonschema==4.26.0",
+    "httpx==0.28.1",
+    "beautifulsoup4==4.15.0",
+    "lxml==6.1.1",
+    "fastapi==0.136.3",
+    "uvicorn[standard]==0.49.0",
+    "python-multipart==0.0.32",
+    "pydantic==2.13.4",
+    "anthropic==0.116.0",
+    "openai==2.41.0",
+    "PyJWT[crypto]==2.13.0",
+    "axiom-py==0.12.0",
 ]
 
 [project.optional-dependencies]
