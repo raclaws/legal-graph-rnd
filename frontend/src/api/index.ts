@@ -2,15 +2,23 @@ import type { ChatResponse, SeveranceRequest, SeveranceResponse, ProvisionRespon
 
 const BASE = ''
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('auth_token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+let _getAccessToken: (() => Promise<string | undefined>) | null = null
+
+export function setAccessTokenGetter(getter: () => Promise<string | undefined>) {
+  _getAccessToken = getter
+}
+
+export async function authHeaders(): Promise<Record<string, string>> {
+  if (_getAccessToken) {
+    const token = await _getAccessToken()
+    if (token) return { Authorization: `Bearer ${token}` }
+  }
+  return {}
 }
 
 function handleUnauthorized(res: Response): Response {
   if (res.status === 401) {
-    localStorage.removeItem('auth_token')
-    window.location.reload()
+    window.location.href = '/'
   }
   return res
 }
@@ -40,7 +48,7 @@ export async function sendMessage(
 ): Promise<ChatResponse> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify({ session_id: sessionId, message, context }),
   }))
   if (!res.ok) throw new Error(`Chat failed: ${res.status}`)
@@ -61,7 +69,7 @@ export async function sendMessageStream(
 ): Promise<void> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/chat/stream`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify({ session_id: sessionId, message }),
   }))
 
@@ -111,7 +119,7 @@ export async function sendMessageWithFile(
 
   const res = handleUnauthorized(await fetch(`${BASE}/api/chat/upload`, {
     method: 'POST',
-    headers: { ...authHeaders() },
+    headers: { ...(await authHeaders()) },
     body: formData,
   }))
   if (!res.ok) throw new Error(`Upload failed: ${res.status}`)
@@ -121,7 +129,7 @@ export async function sendMessageWithFile(
 export async function checkCompliance(req: ComplianceCheckRequest): Promise<ComplianceCheckResponse> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/compliance/check`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify(req),
   }))
   if (!res.ok) throw new Error(`Compliance check failed: ${res.status}`)
@@ -131,7 +139,7 @@ export async function checkCompliance(req: ComplianceCheckRequest): Promise<Comp
 export async function calculateSeverance(req: SeveranceRequest): Promise<SeveranceResponse> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/calculate/severance`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify(req),
   }))
   if (!res.ok) throw new Error(`Calculator failed: ${res.status}`)
@@ -140,7 +148,7 @@ export async function calculateSeverance(req: SeveranceRequest): Promise<Severan
 
 export async function getProvision(nodeId: string): Promise<ProvisionResponse> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/provision/${nodeId}`, {
-    headers: { ...authHeaders() },
+    headers: { ...(await authHeaders()) },
   }))
   if (!res.ok) throw new Error(`Provision not found: ${res.status}`)
   return res.json()
@@ -148,7 +156,7 @@ export async function getProvision(nodeId: string): Promise<ProvisionResponse> {
 
 export async function explainTerm(term: string): Promise<ExplainResponse> {
   const res = handleUnauthorized(await fetch(`${BASE}/api/explain?term=${encodeURIComponent(term)}`, {
-    headers: { ...authHeaders() },
+    headers: { ...(await authHeaders()) },
   }))
   if (!res.ok) throw new Error(`Explain failed: ${res.status}`)
   return res.json()

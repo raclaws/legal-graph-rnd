@@ -100,12 +100,16 @@ KNOWLEDGE (from graph — 17 regulations):
 
 def call_llm_chat(messages: list[dict]) -> dict | None:
     import openai
+    import time as _time
+    from ..middleware.observability import log_llm
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
         logger.warning("call_llm_chat: no API key configured")
         return None
 
+    start = _time.perf_counter()
+    error_msg = None
     try:
         client = openai.OpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
 
@@ -134,21 +138,30 @@ def call_llm_chat(messages: list[dict]) -> dict | None:
 
         return json.loads(raw)
     except json.JSONDecodeError as e:
+        error_msg = f"JSON parse: {e}"
         logger.error("call_llm_chat: JSON parse failed: %s", e)
         return None
     except Exception as e:
+        error_msg = f"{type(e).__name__}: {e}"
         logger.error("call_llm_chat: %s: %s", type(e).__name__, e)
         return None
+    finally:
+        duration_ms = (_time.perf_counter() - start) * 1000
+        log_llm("call_llm_chat", model, duration_ms, error=error_msg)
 
 
 def call_llm_simple(prompt: str) -> str | None:
     import openai
+    import time as _time
+    from ..middleware.observability import log_llm
 
     api_key, base_url, model = get_llm_config()
     if not api_key:
         logger.warning("call_llm_simple: no API key configured")
         return None
 
+    start = _time.perf_counter()
+    error_msg = None
     try:
         client = openai.OpenAI(api_key=api_key, base_url=_openai_base_url(base_url))
         response = client.chat.completions.create(
@@ -163,8 +176,12 @@ def call_llm_simple(prompt: str) -> str | None:
         logger.warning("call_llm_simple: empty response from LLM")
         return None
     except Exception as e:
+        error_msg = f"{type(e).__name__}: {e}"
         logger.error("call_llm_simple: %s: %s", type(e).__name__, e)
         return None
+    finally:
+        duration_ms = (_time.perf_counter() - start) * 1000
+        log_llm("call_llm_simple", model, duration_ms, error=error_msg)
 
 
 def _openai_base_url(base_url: str) -> str:

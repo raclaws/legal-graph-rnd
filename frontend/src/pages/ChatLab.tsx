@@ -295,12 +295,12 @@ export default function ChatLab() {
     }
 
     try {
-      const token = localStorage.getItem('auth_token')
+      const headers = await (await import('../api')).authHeaders()
       const res = await fetch('/api/chat/stream-v2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...headers,
         },
         body: JSON.stringify({ message, session_id: sessionId }),
       })

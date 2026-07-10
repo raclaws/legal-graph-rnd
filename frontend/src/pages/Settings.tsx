@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react'
-
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('auth_token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
+import { authHeaders } from '../api'
 
 export default function Settings() {
   const [model, setModel] = useState('')
@@ -14,24 +10,29 @@ export default function Settings() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    fetch('/api/settings', { headers: authHeaders() })
-      .then(r => r.json())
-      .then(data => {
-        setModel(data.model || '')
-        setBaseUrl(data.base_url || '')
-      })
-    fetch('/api/settings/models', { headers: authHeaders() })
-      .then(r => r.json())
-      .then(data => setModels(data.models || []))
-      .finally(() => setLoadingModels(false))
+    async function load() {
+      const headers = await authHeaders()
+      fetch('/api/settings', { headers })
+        .then(r => r.json())
+        .then(data => {
+          setModel(data.model || '')
+          setBaseUrl(data.base_url || '')
+        })
+      fetch('/api/settings/models', { headers })
+        .then(r => r.json())
+        .then(data => setModels(data.models || []))
+        .finally(() => setLoadingModels(false))
+    }
+    load()
   }, [])
 
   async function handleSave() {
     setSaving(true)
     setSaved(false)
+    const headers = await authHeaders()
     const res = await fetch('/api/settings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ model, base_url: baseUrl }),
     })
     if (res.ok) {
@@ -44,9 +45,10 @@ export default function Settings() {
     setSaving(false)
   }
 
-  function refreshModels() {
+  async function refreshModels() {
     setLoadingModels(true)
-    fetch('/api/settings/models', { headers: authHeaders() })
+    const headers = await authHeaders()
+    fetch('/api/settings/models', { headers })
       .then(r => r.json())
       .then(data => setModels(data.models || []))
       .finally(() => setLoadingModels(false))

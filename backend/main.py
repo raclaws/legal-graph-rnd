@@ -12,7 +12,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .routes import auth, calculator, chat, chat_v2, compliance, explain, provision, settings
+from .middleware.auth import validate_token
+from .middleware.observability import ObservabilityMiddleware
+from .routes import calculator, chat, chat_v2, compliance, explain, provision, settings
 
 
 @asynccontextmanager
@@ -34,23 +36,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_PUBLIC_PATHS = {"/health", "/api/auth/login", "/api/auth/check"}
+app.add_middleware(ObservabilityMiddleware)
+
+_PUBLIC_PATHS = {"/health"}
 
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     if request.url.path in _PUBLIC_PATHS:
         return await call_next(request)
-    if not os.environ.get("AUTH_USER"):
+
+    # Skip auth if no Logto endpoint configured (local dev without auth)
+    if not os.environ.get("LOGTO_ENDPOINT"):
         return await call_next(request)
 
     token = request.headers.get("Authorization", "")
-    if token.startswith("Bearer ") and auth._verify_token(token[7:]):
-        return await call_next(request)
+    if token.startswith("Bearer "):
+        claims = validate_token(token[7:])
+        if claims:
+            request.state.user = claims
+            return await call_next(request)
+
     return JSONResponse(status_code=401, content={"detail": "Unauthorized"})
 
 
-app.include_router(auth.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(chat_v2.router, prefix="/api")
 app.include_router(calculator.router, prefix="/api")
