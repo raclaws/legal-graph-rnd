@@ -6,8 +6,9 @@ services:
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
-      - AUTH_USER=${AUTH_USER:-admin}
-      - AUTH_PASS=${AUTH_PASS:-admin}
+      - LOGTO_ENDPOINT=${LOGTO_ENDPOINT}
+      - AXIOM_TOKEN=${AXIOM_TOKEN}
+      - AXIOM_DATASET=${AXIOM_DATASET:-legal-graph}
     volumes:
       - ./data:/app/data
     restart: unless-stopped
