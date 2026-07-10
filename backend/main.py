@@ -19,7 +19,38 @@ from .routes import calculator, chat, chat_v2, compliance, explain, provision, s
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if os.environ.get("INFISICAL_CLIENT_ID"):
+        _load_infisical_secrets()
     yield
+
+
+def _load_infisical_secrets():
+    """Fetch secrets from Infisical at boot via Universal Auth."""
+    from infisical_client import (
+        ClientSettings,
+        InfisicalClient,
+        ListSecretsOptions,
+        AuthenticationOptions,
+        UniversalAuthMethod,
+    )
+
+    client = InfisicalClient(ClientSettings(
+        auth=AuthenticationOptions(
+            universal_auth=UniversalAuthMethod(
+                client_id=os.environ["INFISICAL_CLIENT_ID"],
+                client_secret=os.environ["INFISICAL_CLIENT_SECRET"],
+            )
+        )
+    ))
+
+    secrets = client.listSecrets(options=ListSecretsOptions(
+        environment=os.environ.get("INFISICAL_ENV", "prod"),
+        project_id="877bab29-028e-492d-aad1-acb44ca4f529",
+        path="/",
+    ))
+
+    for s in secrets:
+        os.environ.setdefault(s.secret_key, s.secret_value)
 
 
 app = FastAPI(

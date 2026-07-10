@@ -17,6 +17,7 @@ dependencies = [
     "openai==2.41.0",
     "PyJWT[crypto]==2.13.0",
     "axiom-py==0.12.0",
+    "infisical-python==2.3.6",
 ]
 
 [project.optional-dependencies]

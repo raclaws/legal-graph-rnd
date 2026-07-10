@@ -4,11 +4,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
-      - LOGTO_ENDPOINT=${LOGTO_ENDPOINT}
-      - AXIOM_TOKEN=${AXIOM_TOKEN}
-      - AXIOM_DATASET=${AXIOM_DATASET:-legal-graph}
+      - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID}
+      - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET}
+      - INFISICAL_ENV=${INFISICAL_ENV:-prod}
     volumes:
       - ./data:/app/data
     restart: unless-stopped

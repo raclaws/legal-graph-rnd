@@ -1,4 +1,4 @@
-import { onCLS, onFID, onLCP, onTTFB } from 'web-vitals'
+import { onCLS, onINP, onLCP, onTTFB } from 'web-vitals'
 
 const AXIOM_TOKEN = import.meta.env.VITE_AXIOM_TOKEN
 const AXIOM_DATASET = import.meta.env.VITE_AXIOM_DATASET || 'legal-graph'
@@ -26,7 +26,7 @@ export function initObservability() {
   }
 
   onCLS(reportVital)
-  onFID(reportVital)
+  onINP(reportVital)
   onLCP(reportVital)
   onTTFB(reportVital)
 
