@@ -10,7 +10,6 @@ venv/
 .env
 .settings.json
 data/.settings.json
-data/legal.db
 corpus/raw/
 corpus/parsed/
 
