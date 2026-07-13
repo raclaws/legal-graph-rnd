@@ -34,13 +34,13 @@ def _load_infisical_secrets():
         client_secret=os.environ["INFISICAL_CLIENT_SECRET"],
     )
 
-    secrets = client.secrets.list_secrets(
+    response = client.secrets.list_secrets(
         project_id="877bab29-028e-492d-aad1-acb44ca4f529",
         environment_slug=os.environ.get("INFISICAL_ENV", "prod"),
         secret_path="/",
     )
 
-    for s in secrets:
+    for s in response.secrets:
         os.environ.setdefault(s.secretKey, s.secretValue)
 
 
