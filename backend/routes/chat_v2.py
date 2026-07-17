@@ -427,9 +427,9 @@ async def chat_ai_stream(request: Request):
                         yield _ai_evt("data-hukum", data=data)
                     elif event_type == "analisis_delta":
                         if not text_started:
-                            yield _ai_evt("text-start", textId=message_id)
+                            yield _ai_evt("text-start", id=message_id)
                             text_started = True
-                        yield _ai_evt("text-delta", textDelta=data)
+                        yield _ai_evt("text-delta", id=message_id, delta=data)
                     elif event_type == "perlu_item":
                         buffered_perlu.append(data)
                     elif event_type == "action_item":
@@ -443,7 +443,7 @@ async def chat_ai_stream(request: Request):
             return
 
         if text_started:
-            yield _ai_evt("text-end", textId=message_id)
+            yield _ai_evt("text-end", id=message_id)
 
         if token_count == 0:
             yield _ai_evt("error", errorText="No tokens received from LLM")
