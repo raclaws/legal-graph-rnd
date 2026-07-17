@@ -409,6 +409,7 @@ async def chat_ai_stream(request: Request):
         token_count = 0
         buffered_perlu: list[dict] = []
         full_text = ""
+        text_started = False
 
         _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
 
@@ -425,6 +426,9 @@ async def chat_ai_stream(request: Request):
                     if event_type == "hukum_item":
                         yield _ai_evt("data-hukum", data=data)
                     elif event_type == "analisis_delta":
+                        if not text_started:
+                            yield _ai_evt("text-start", textId=message_id)
+                            text_started = True
                         yield _ai_evt("text-delta", textDelta=data)
                     elif event_type == "perlu_item":
                         buffered_perlu.append(data)
@@ -437,6 +441,9 @@ async def chat_ai_stream(request: Request):
             yield _ai_evt("finish", messageId=message_id)
             yield "data: [DONE]\n\n"
             return
+
+        if text_started:
+            yield _ai_evt("text-end", textId=message_id)
 
         if token_count == 0:
             yield _ai_evt("error", errorText="No tokens received from LLM")
