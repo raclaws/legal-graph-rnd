@@ -219,19 +219,10 @@ export default function ChatLab() {
   const [sessionId, setSessionId] = useState<string>()
   const [input, setInput] = useState('')
   const [fileLoading, setFileLoading] = useState(false)
-  const [statusText, setStatusText] = useState('')
-  const [streamingHukum, setStreamingHukum] = useState<HukumCard[]>([])
-  const [streamingAnalisis, setStreamingAnalisis] = useState('')
-  const [streamingPerlu, setStreamingPerlu] = useState<PerluDikonfirmasiItem[]>([])
-  const [streamingActions, setStreamingActions] = useState<ActionItem[]>([])
   const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
   const [panelNodeId, setPanelNodeId] = useState<string | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const prevStatusRef = useRef<string>('')
-  const hukumRef = useRef<HukumCard[]>([])
-  const perluRef = useRef<PerluDikonfirmasiItem[]>([])
-  const actionsRef = useRef<ActionItem[]>([])
-
   const transport = useMemo(() => new DefaultChatTransport({
     api: '/api/chat/ai',
     headers: () => authHeaders(),
@@ -245,10 +236,12 @@ export default function ChatLab() {
     },
   })
 
-  // Handle custom data events from AI SDK stream
-  const lastAiMsg = aiMessages[aiMessages.length - 1]
-  useEffect(() => {
-    if (!lastAiMsg || lastAiMsg.role !== 'assistant') return
+  // Derive streaming state from AI SDK messages (no effects, no setState during render)
+  const streamingFromAi = useMemo(() => {
+    const lastAiMsg = aiMessages[aiMessages.length - 1]
+    if (!lastAiMsg || lastAiMsg.role !== 'assistant') {
+      return { hukum: [] as HukumCard[], perlu: [] as PerluDikonfirmasiItem[], actions: [] as ActionItem[], analisis: '', status: '' }
+    }
     const parts = lastAiMsg.parts || []
     const hukum: HukumCard[] = []
     const perlu: PerluDikonfirmasiItem[] = []
@@ -267,40 +260,26 @@ export default function ChatLab() {
         else if (part.type === 'data-status') status = (d as { text: string })?.text || ''
       }
     }
-
-    // Update streaming state from parts scan
-    if (hukum.length > 0) { hukumRef.current = hukum; setStreamingHukum(hukum) }
-    if (perlu.length > 0) { perluRef.current = perlu; setStreamingPerlu(perlu) }
-    if (actions.length > 0) { actionsRef.current = actions; setStreamingActions(actions) }
-    if (analisis) setStreamingAnalisis(analisis)
-    if (status) setStatusText(status)
-  }, [lastAiMsg])
+    return { hukum, perlu, actions, analisis, status }
+  }, [aiMessages])
 
   // When stream finishes, commit to messages array
   useEffect(() => {
     if (prevStatusRef.current === 'streaming' && chatStatus === 'ready') {
-      const text = streamingAnalisis
-      if (text || hukumRef.current.length > 0) {
+      const { analisis, hukum, perlu, actions } = streamingFromAi
+      if (analisis || hukum.length > 0) {
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: '',
-          hukum: hukumRef.current,
-          analisis: text,
-          perlu: perluRef.current,
-          actions: actionsRef.current,
+          hukum,
+          analisis,
+          perlu,
+          actions,
         }])
       }
-      setStreamingHukum([])
-      setStreamingAnalisis('')
-      setStreamingPerlu([])
-      setStreamingActions([])
-      setStatusText('')
-      hukumRef.current = []
-      perluRef.current = []
-      actionsRef.current = []
     }
     prevStatusRef.current = chatStatus
-  }, [chatStatus, streamingAnalisis])
+  }, [chatStatus, streamingFromAi])
 
   const loading = fileLoading || chatStatus === 'submitted' || chatStatus === 'streaming'
 
@@ -313,16 +292,16 @@ export default function ChatLab() {
         if (!seen.has(key)) { seen.add(key); items.push(h) }
       }
     }
-    for (const h of streamingHukum) {
+    for (const h of streamingFromAi.hukum) {
       const key = `${h.legal_basis}||${h.description}`
       if (!seen.has(key)) { seen.add(key); items.push(h) }
     }
     return items
-  }, [messages, streamingHukum])
+  }, [messages, streamingFromAi.hukum])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, streamingAnalisis, streamingPerlu])
+  }, [messages, streamingFromAi.analisis, streamingFromAi.perlu])
 
   function handleCitationClick(nodeId: string, idx?: number) {
     setPanelNodeId(nodeId)
@@ -368,14 +347,6 @@ export default function ChatLab() {
     }
 
     // Stream via AI SDK
-    hukumRef.current = []
-    perluRef.current = []
-    actionsRef.current = []
-    setStreamingHukum([])
-    setStreamingAnalisis('')
-    setStreamingPerlu([])
-    setStreamingActions([])
-    setStatusText('')
     sendMessage({ text: message })
   }
 
@@ -547,33 +518,33 @@ export default function ChatLab() {
           ))}
 
           {/* Streaming state */}
-          {loading && statusText && (
+          {loading && streamingFromAi.status && (
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div className="flex gap-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.2s]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.4s]" />
               </div>
-              {statusText}
+              {streamingFromAi.status}
             </div>
           )}
 
-          {loading && streamingAnalisis && (
+          {loading && streamingFromAi.analisis && (
             <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
               <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
-              <AnalisisWithCitations text={streamingAnalisis} hukumCards={streamingHukum} loading={true} onCitationClick={handleCitationClick} />
+              <AnalisisWithCitations text={streamingFromAi.analisis} hukumCards={streamingFromAi.hukum} loading={true} onCitationClick={handleCitationClick} />
             </div>
           )}
 
-          {loading && streamingPerlu.length > 0 && (
-            <PerluSection items={streamingPerlu} onSubmit={handleSend} />
+          {loading && streamingFromAi.perlu.length > 0 && (
+            <PerluSection items={streamingFromAi.perlu} onSubmit={handleSend} />
           )}
 
-          {loading && streamingActions.length > 0 && (
+          {loading && streamingFromAi.actions.length > 0 && (
             <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4">
               <h4 className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-2">Yang Perlu Diperbaiki</h4>
               <ul className="space-y-1.5">
-                {streamingActions.map((action, i) => (
+                {streamingFromAi.actions.map((action, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <span className="text-orange-500 shrink-0">•</span>
                     <div>
