@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import type { PerluDikonfirmasiItem, ActionItem } from '../types'
-import { sendMessageWithFile } from '../api'
+import { sendMessageWithFile, authHeaders } from '../api'
 import Markdown from '../components/shared/Markdown'
 import ChatMessage from '../components/chat/ChatMessage'
 import ChatInput from '../components/chat/ChatInput'
@@ -216,8 +218,8 @@ export default function ChatLab() {
   const [messages, setMessages] = useState<Message[]>([])
   const [sessionId, setSessionId] = useState<string>()
   const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [status, setStatus] = useState('')
+  const [fileLoading, setFileLoading] = useState(false)
+  const [statusText, setStatusText] = useState('')
   const [streamingHukum, setStreamingHukum] = useState<HukumCard[]>([])
   const [streamingAnalisis, setStreamingAnalisis] = useState('')
   const [streamingPerlu, setStreamingPerlu] = useState<PerluDikonfirmasiItem[]>([])
@@ -225,6 +227,81 @@ export default function ChatLab() {
   const [focusedHukum, setFocusedHukum] = useState<number | null>(null)
   const [panelNodeId, setPanelNodeId] = useState<string | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const prevStatusRef = useRef<string>('')
+  const hukumRef = useRef<HukumCard[]>([])
+  const perluRef = useRef<PerluDikonfirmasiItem[]>([])
+  const actionsRef = useRef<ActionItem[]>([])
+
+  const transport = useMemo(() => new DefaultChatTransport({
+    api: '/api/chat/ai',
+    headers: () => authHeaders(),
+  }), [])
+
+  const { messages: aiMessages, sendMessage, status: chatStatus, stop } = useChat({
+    transport,
+    onError: () => {
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Tidak dapat terhubung ke server.' }])
+    },
+  })
+
+  // Handle custom data events from AI SDK stream
+  const lastAiMsg = aiMessages[aiMessages.length - 1]
+  useEffect(() => {
+    if (!lastAiMsg || lastAiMsg.role !== 'assistant') return
+    const parts = lastAiMsg.parts || []
+    const hukum: HukumCard[] = []
+    const perlu: PerluDikonfirmasiItem[] = []
+    const actions: ActionItem[] = []
+    let analisis = ''
+    let status = ''
+
+    for (const part of parts) {
+      if (part.type === 'text') {
+        analisis = part.text
+      } else if (part.type.startsWith('data-')) {
+        const d = (part as { type: string; data: unknown }).data as Record<string, unknown>
+        if (part.type === 'data-hukum') hukum.push(d as unknown as HukumCard)
+        else if (part.type === 'data-perlu') perlu.push(d as unknown as PerluDikonfirmasiItem)
+        else if (part.type === 'data-action') actions.push(d as unknown as ActionItem)
+        else if (part.type === 'data-status') status = (d as { text: string })?.text || ''
+      }
+    }
+
+    // Update streaming state from parts scan
+    if (hukum.length > 0) { hukumRef.current = hukum; setStreamingHukum(hukum) }
+    if (perlu.length > 0) { perluRef.current = perlu; setStreamingPerlu(perlu) }
+    if (actions.length > 0) { actionsRef.current = actions; setStreamingActions(actions) }
+    if (analisis) setStreamingAnalisis(analisis)
+    if (status) setStatusText(status)
+  }, [lastAiMsg])
+
+  // When stream finishes, commit to messages array
+  useEffect(() => {
+    if (prevStatusRef.current === 'streaming' && chatStatus === 'ready') {
+      const text = streamingAnalisis
+      if (text || hukumRef.current.length > 0) {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: '',
+          hukum: hukumRef.current,
+          analisis: text,
+          perlu: perluRef.current,
+          actions: actionsRef.current,
+        }])
+      }
+      setStreamingHukum([])
+      setStreamingAnalisis('')
+      setStreamingPerlu([])
+      setStreamingActions([])
+      setStatusText('')
+      hukumRef.current = []
+      perluRef.current = []
+      actionsRef.current = []
+    }
+    prevStatusRef.current = chatStatus
+  }, [chatStatus, streamingAnalisis])
+
+  const loading = fileLoading || chatStatus === 'submitted' || chatStatus === 'streaming'
 
   const allHukum = useMemo(() => {
     const items: HukumCard[] = []
@@ -258,18 +335,13 @@ export default function ChatLab() {
     const message = text || input
     if (!message.trim() || loading) return
     setInput('')
-    setLoading(true)
-    setStatus('')
-    setStreamingHukum([])
-    setStreamingAnalisis('')
-    setStreamingPerlu([])
-    setStreamingActions([])
 
     const userContent = file ? `${message}\n\n📎 ${file.name}` : message
     setMessages(prev => [...prev, { role: 'user', content: userContent }])
 
     // File upload uses the non-streaming endpoint
     if (file) {
+      setFileLoading(true)
       try {
         const res = await sendMessageWithFile(message, file, sessionId)
         setSessionId(res.session_id)
@@ -289,103 +361,21 @@ export default function ChatLab() {
       } catch {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Gagal upload. Coba lagi.' }])
       } finally {
-        setLoading(false)
+        setFileLoading(false)
       }
       return
     }
 
-    try {
-      const headers = await (await import('../api')).authHeaders()
-      const res = await fetch('/api/chat/stream-v2', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
-        body: JSON.stringify({ message, session_id: sessionId }),
-      })
-
-      if (!res.ok) {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'Gagal memproses. Coba lagi.' }])
-        setLoading(false)
-        return
-      }
-
-      const reader = res.body?.getReader()
-      if (!reader) return
-
-      const decoder = new TextDecoder()
-      let buffer = ''
-      const collectedHukum: HukumCard[] = []
-      let collectedAnalisis = ''
-      const collectedPerlu: PerluDikonfirmasiItem[] = []
-      const collectedActions: ActionItem[] = []
-
-      while (true) {
-        const { done: streamDone, value } = await reader.read()
-        if (streamDone) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const payload = line.slice(6)
-          if (payload === '[DONE]') break
-
-          try {
-            const event = JSON.parse(payload)
-
-            switch (event.type) {
-              case 'status':
-                setStatus(event.data?.text || '')
-                break
-              case 'hukum_item':
-                collectedHukum.push(event.data)
-                setStreamingHukum([...collectedHukum])
-                setStatus('')
-                break
-              case 'analisis_delta':
-                collectedAnalisis += event.delta
-                setStreamingAnalisis(collectedAnalisis)
-                setStatus('')
-                break
-              case 'perlu_item':
-                collectedPerlu.push(event.data)
-                setStreamingPerlu([...collectedPerlu])
-                break
-              case 'action_item':
-                collectedActions.push(event.data)
-                setStreamingActions([...collectedActions])
-                break
-              case 'done':
-                if (event.data?.session_id) setSessionId(event.data.session_id)
-                setMessages(prev => [...prev, {
-                  role: 'assistant',
-                  content: '',
-                  hukum: collectedHukum,
-                  analisis: collectedAnalisis,
-                  perlu: collectedPerlu,
-                  actions: collectedActions,
-                }])
-                setStreamingHukum([])
-                setStreamingAnalisis('')
-                setStreamingPerlu([])
-                break
-              case 'error':
-                setMessages(prev => [...prev, { role: 'assistant', content: event.data?.text || 'Error' }])
-                break
-            }
-          } catch { /* skip malformed */ }
-        }
-      }
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Tidak dapat terhubung ke server.' }])
-    } finally {
-      setLoading(false)
-      setStatus('')
-    }
+    // Stream via AI SDK
+    hukumRef.current = []
+    perluRef.current = []
+    actionsRef.current = []
+    setStreamingHukum([])
+    setStreamingAnalisis('')
+    setStreamingPerlu([])
+    setStreamingActions([])
+    setStatusText('')
+    sendMessage({ text: message })
   }
 
   const hasSidebar = allHukum.length > 0
@@ -556,14 +546,14 @@ export default function ChatLab() {
           ))}
 
           {/* Streaming state */}
-          {loading && status && (
+          {loading && statusText && (
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div className="flex gap-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.2s]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.4s]" />
               </div>
-              {status}
+              {statusText}
             </div>
           )}
 
@@ -605,8 +595,13 @@ export default function ChatLab() {
 
       {/* Input — with file attachment */}
       <div className="border-t border-gray-200 bg-white px-4 py-3 pb-safe" style={{ paddingRight: hasSidebar && !panelNodeId ? '21rem' : panelNodeId ? '25rem' : undefined }}>
-        <div className="max-w-3xl mx-auto">
-          <ChatInput onSend={handleSend} disabled={loading} />
+        <div className="max-w-3xl mx-auto flex items-center gap-2">
+          <div className="flex-1">
+            <ChatInput onSend={handleSend} disabled={loading} />
+          </div>
+          {(chatStatus === 'submitted' || chatStatus === 'streaming') && (
+            <button onClick={() => stop()} className="shrink-0 rounded border border-gray-300 px-3 py-2 text-xs text-gray-600 hover:bg-gray-100">Stop</button>
+          )}
         </div>
       </div>
 

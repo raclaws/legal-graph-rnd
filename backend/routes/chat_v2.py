@@ -12,11 +12,14 @@ No post-hoc JSON surgery. Each event is independently renderable.
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from enum import Enum, auto
+from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from ..schemas import ChatRequest
 from ..services.llm import async_stream_llm_chat, get_llm_config, SYSTEM_PROMPT, _openai_base_url
@@ -296,7 +299,6 @@ async def chat_stream_v2(req: ChatRequest):
         intent_match = full_text.find('"intent"')
         if intent_match != -1:
             after = full_text[intent_match:]
-            import re
             m = re.search(r'"intent"\s*:\s*"([^"]*)"', after)
             if m:
                 intent = m.group(1)
@@ -317,5 +319,153 @@ async def chat_stream_v2(req: ChatRequest):
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# AI SDK data stream protocol endpoint
+# ---------------------------------------------------------------------------
+
+class AIChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class AIChatRequest(BaseModel):
+    messages: list[AIChatMessage]
+
+
+def _ai_evt(event_type: str, **kwargs: Any) -> str:
+    payload = {"type": event_type, **kwargs}
+    return f"data: {json.dumps(payload)}\n\n"
+
+
+@router.post("/chat/ai")
+async def chat_ai_stream(request: Request):
+    from ..services.graph import search_definitions
+    from .chat import _detect_conceptual_question, _build_definition_context
+
+    body = await request.json()
+    incoming_messages = body.get("messages", [])
+
+    if not incoming_messages:
+        return StreamingResponse(
+            iter([_ai_evt("error", errorText="No messages provided"), "data: [DONE]\n\n"]),
+            media_type="text/event-stream",
+        )
+
+    last_user_msg = ""
+    for m in reversed(incoming_messages):
+        if m.get("role") == "user":
+            parts = m.get("parts", [])
+            for p in parts:
+                if p.get("type") == "text":
+                    last_user_msg = p.get("text", "")
+                    break
+            if not last_user_msg:
+                last_user_msg = m.get("content", "")
+            break
+
+    if not last_user_msg:
+        return StreamingResponse(
+            iter([_ai_evt("error", errorText="No user message found"), "data: [DONE]\n\n"]),
+            media_type="text/event-stream",
+        )
+
+    session_id = str(uuid.uuid4())
+
+    # Build conversation history for LLM
+    history: list[dict] = []
+    for m in incoming_messages:
+        role = m.get("role", "user")
+        parts = m.get("parts", [])
+        content = ""
+        for p in parts:
+            if p.get("type") == "text":
+                content += p.get("text", "")
+        if not content:
+            content = m.get("content", "")
+        if content and role in ("user", "assistant"):
+            history.append({"role": role, "content": content})
+
+    # Inject definition context for conceptual questions
+    conceptual_keywords = _detect_conceptual_question(last_user_msg)
+    if conceptual_keywords:
+        definition_context = _build_definition_context(conceptual_keywords)
+        if history:
+            history[-1] = {
+                "role": history[-1]["role"],
+                "content": history[-1]["content"] + definition_context,
+            }
+
+    message_id = str(uuid.uuid4())
+
+    async def generate():
+        yield _ai_evt("start", messageId=message_id)
+        yield _ai_evt("start-step", messageId=message_id)
+
+        parser = IncrementalParser()
+        token_count = 0
+        buffered_perlu: list[dict] = []
+        full_text = ""
+
+        _INTENTS_THAT_NEED_INPUT = {"severance_calc", "ump_check"}
+
+        try:
+            async for token in _stream_llm(history):
+                token_count += 1
+                full_text += token
+
+                if token_count == 1:
+                    yield _ai_evt("data-status", data={"text": "Menganalisis..."})
+
+                events = parser.feed(token)
+                for event_type, data in events:
+                    if event_type == "hukum_item":
+                        yield _ai_evt("data-hukum", data=data)
+                    elif event_type == "analisis_delta":
+                        yield _ai_evt("text-delta", textDelta=data)
+                    elif event_type == "perlu_item":
+                        buffered_perlu.append(data)
+                    elif event_type == "action_item":
+                        yield _ai_evt("data-action", data=data)
+
+        except Exception as e:
+            yield _ai_evt("error", errorText=f"LLM error: {type(e).__name__}: {e}")
+            yield _ai_evt("finish-step", messageId=message_id)
+            yield _ai_evt("finish", messageId=message_id)
+            yield "data: [DONE]\n\n"
+            return
+
+        if token_count == 0:
+            yield _ai_evt("error", errorText="No tokens received from LLM")
+
+        # Gate perlu_dikonfirmasi by intent
+        intent = ""
+        intent_match = full_text.find('"intent"')
+        if intent_match != -1:
+            after = full_text[intent_match:]
+            m = re.search(r'"intent"\s*:\s*"([^"]*)"', after)
+            if m:
+                intent = m.group(1)
+
+        if intent in _INTENTS_THAT_NEED_INPUT and buffered_perlu:
+            for item in buffered_perlu:
+                yield _ai_evt("data-perlu", data=item)
+
+        yield _ai_evt("finish-step", messageId=message_id,
+                      metadata={"session_id": session_id})
+        yield _ai_evt("finish", messageId=message_id)
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+            "x-vercel-ai-ui-message-stream": "v1",
         },
     )
