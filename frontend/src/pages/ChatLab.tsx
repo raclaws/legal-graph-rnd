@@ -8,6 +8,8 @@ import ChatMessage from '../components/chat/ChatMessage'
 import ChatInput from '../components/chat/ChatInput'
 import ProvisionPanel from '../components/shared/ProvisionPanel'
 
+const PIPELINE_STEPS = ['Mencari dasar hukum', 'Menganalisis', 'Menyusun jawaban'] as const
+
 interface HukumCard {
   description: string
   legal_basis: string
@@ -41,6 +43,37 @@ function severityBadge(s: string) {
     case 'medium': return 'bg-yellow-100 text-yellow-800'
     default: return 'bg-blue-100 text-blue-700'
   }
+}
+
+function ProgressBreadcrumb({ hasHukum, hasAnalisis }: { hasHukum: boolean; hasAnalisis: boolean }) {
+  const activeStep = hasAnalisis ? 2 : hasHukum ? 1 : 0
+  return (
+    <div className="flex items-center gap-1 text-[11px]">
+      {PIPELINE_STEPS.map((step, i) => (
+        <span key={i} className="flex items-center gap-1">
+          {i > 0 && <span className="text-gray-300">→</span>}
+          <span className={i === activeStep ? 'text-blue-600 font-medium' : i < activeStep ? 'text-gray-400' : 'text-gray-300'}>
+            {i === activeStep && <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse mr-1 align-middle" />}
+            {step}
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div className="space-y-3 animate-pulse">
+      <div className="flex gap-2">
+        <div className="h-5 w-20 bg-gray-200 rounded" />
+        <div className="h-5 w-32 bg-gray-200 rounded" />
+      </div>
+      <div className="h-4 w-full bg-gray-100 rounded" />
+      <div className="h-4 w-3/4 bg-gray-100 rounded" />
+      <div className="h-4 w-1/2 bg-gray-100 rounded" />
+    </div>
+  )
 }
 
 function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
@@ -518,30 +551,29 @@ export default function ChatLab() {
           ))}
 
           {/* Streaming state */}
-          {loading && streamingFromAi.status && (
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <div className="flex gap-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.2s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:0.4s]" />
-              </div>
-              {streamingFromAi.status}
-            </div>
+          {loading && !streamingFromAi.analisis && streamingFromAi.hukum.length === 0 && (
+            <SkeletonCard />
+          )}
+
+          {loading && (chatStatus === 'submitted' || chatStatus === 'streaming') && (
+            <ProgressBreadcrumb hasHukum={streamingFromAi.hukum.length > 0} hasAnalisis={!!streamingFromAi.analisis} />
           )}
 
           {loading && streamingFromAi.analisis && (
-            <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4">
+            <div className="border-l-4 border-amber-400 bg-amber-50 rounded-r-lg p-4 animate-[fadeIn_0.2s_ease-out]">
               <h4 className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-2">Analisis</h4>
               <AnalisisWithCitations text={streamingFromAi.analisis} hukumCards={streamingFromAi.hukum} loading={true} onCitationClick={handleCitationClick} />
             </div>
           )}
 
           {loading && streamingFromAi.perlu.length > 0 && (
-            <PerluSection items={streamingFromAi.perlu} onSubmit={handleSend} />
+            <div className="animate-[fadeIn_0.2s_ease-out]">
+              <PerluSection items={streamingFromAi.perlu} onSubmit={handleSend} />
+            </div>
           )}
 
           {loading && streamingFromAi.actions.length > 0 && (
-            <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4">
+            <div className="border-l-4 border-orange-400 bg-orange-50 rounded-r-lg p-4 animate-[fadeIn_0.2s_ease-out]">
               <h4 className="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-2">Yang Perlu Diperbaiki</h4>
               <ul className="space-y-1.5">
                 {streamingFromAi.actions.map((action, i) => (

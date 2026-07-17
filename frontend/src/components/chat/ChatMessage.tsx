@@ -28,7 +28,7 @@ export default function ChatMessage({ role, content, onRetry }: Props) {
 
   return (
     <div className="flex justify-start">
-      <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[80%] text-sm text-gray-700">
+      <div className="max-w-[80%] text-sm text-gray-700">
         {content}
       </div>
     </div>
