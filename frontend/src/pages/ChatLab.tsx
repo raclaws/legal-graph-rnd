@@ -239,8 +239,9 @@ export default function ChatLab() {
 
   const { messages: aiMessages, sendMessage, status: chatStatus, stop } = useChat({
     transport,
-    onError: () => {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Tidak dapat terhubung ke server.' }])
+    onError: (err) => {
+      console.error('[useChat error]', err)
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message || 'Tidak dapat terhubung ke server.'}` }])
     },
   })
 
