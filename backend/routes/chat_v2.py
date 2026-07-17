@@ -402,8 +402,8 @@ async def chat_ai_stream(request: Request):
     message_id = str(uuid.uuid4())
 
     async def generate():
-        yield _ai_evt("start", messageId=message_id)
-        yield _ai_evt("start-step", messageId=message_id)
+        yield _ai_evt("start")
+        yield _ai_evt("start-step")
 
         parser = IncrementalParser()
         token_count = 0
@@ -437,8 +437,8 @@ async def chat_ai_stream(request: Request):
 
         except Exception as e:
             yield _ai_evt("error", errorText=f"LLM error: {type(e).__name__}: {e}")
-            yield _ai_evt("finish-step", messageId=message_id)
-            yield _ai_evt("finish", messageId=message_id)
+            yield _ai_evt("finish-step")
+            yield _ai_evt("finish")
             yield "data: [DONE]\n\n"
             return
 
@@ -461,9 +461,8 @@ async def chat_ai_stream(request: Request):
             for item in buffered_perlu:
                 yield _ai_evt("data-perlu", data=item)
 
-        yield _ai_evt("finish-step", messageId=message_id,
-                      metadata={"session_id": session_id})
-        yield _ai_evt("finish", messageId=message_id)
+        yield _ai_evt("finish-step")
+        yield _ai_evt("finish")
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(
