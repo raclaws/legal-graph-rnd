@@ -93,7 +93,10 @@ function AnalisisWithCitations({ text, hukumCards, loading, onCitationClick }: {
           return (
             <sup
               key={i}
+              role="button"
+              tabIndex={card?.legal_basis ? 0 : -1}
               onClick={() => card?.legal_basis && onCitationClick(card.legal_basis, idx)}
+              onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && card?.legal_basis) { e.preventDefault(); onCitationClick(card.legal_basis, idx) } }}
               className={`font-semibold text-[9px] ml-0.5 ${card?.legal_basis ? 'text-blue-600 cursor-pointer hover:text-blue-800' : 'text-gray-400'}`}
               title={card ? formatPasal(card.legal_basis) : ''}
             >
@@ -226,12 +229,16 @@ function HukumSidebarLab({ cards, focusedIndex, onCitationClick }: {
         <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Dasar Hukum</h3>
         <p className="text-[10px] text-gray-400 mt-0.5">{cards.length} ketentuan</p>
       </div>
-      <ul className="divide-y divide-gray-100">
+      <ul role="listbox" aria-label="Dasar hukum" className="divide-y divide-gray-100">
         {cards.map((card, i) => (
           <li
-            key={i}
+            key={card.legal_basis || i}
             ref={el => { refs.current[i] = el }}
+            role="option"
+            aria-selected={focusedIndex === i}
+            tabIndex={focusedIndex === i ? 0 : -1}
             onClick={() => card.legal_basis && onCitationClick(card.legal_basis)}
+            onKeyDown={e => { if (e.key === 'Enter' && card.legal_basis) onCitationClick(card.legal_basis) }}
             className={`px-4 py-3 transition-colors animate-[fadeSlideIn_0.2s_ease-out] ${card.legal_basis ? 'cursor-pointer' : ''} ${focusedIndex === i ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'}`}
           >
             <div className="flex items-start gap-2">
@@ -551,6 +558,7 @@ export default function ChatLab() {
           ))}
 
           {/* Streaming state */}
+          <div aria-live="polite" aria-atomic={false}>
           {loading && !streamingFromAi.analisis && streamingFromAi.hukum.length === 0 && (
             <SkeletonCard />
           )}
@@ -592,6 +600,7 @@ export default function ChatLab() {
               </ul>
             </div>
           )}
+          </div>{/* end aria-live */}
 
           <div ref={endRef} />
         </div>
